@@ -1,6 +1,7 @@
 package network;
 
 public class Layer {
+	
 	public Layer() {
 		
 	}

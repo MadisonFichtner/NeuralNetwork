@@ -1,8 +1,12 @@
 package network;
-
+/* Notes: need to read in a data file, probably
+ * - need to add a connection from each node in 1 layer to every node in the next
+ * - backprop is how MLP learns, but RBF we have to choose 3 algorithms
+ * 
+ */
 import java.util.Scanner;
 
-public class Main {
+public class Main {	
 	
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);

@@ -30,4 +30,9 @@ public class Network {
 			out.addNode();							//create node for each output
 		}
 	}
+	
+	public void backprop() {
+		
+	}
+	
 }
