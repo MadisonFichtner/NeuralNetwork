@@ -127,10 +127,14 @@ public class Main {
 			
 			//finally, create a MLP with all the information needed initially
 			Network MLP = new Network(inputs, hidLayer, hidNode, outputs, actFun, outFun);
+			MLP.backprop();
 		}
 		
 		
 		//STILL NEEDS TRAINING FUNCTIONS AND CORRESPONDING MENU FOR RBF
+		/*	from video: e^(-Beta * ||x - c||^2)
+		 * 
+		 */
 		
 		//if the user chooses to create an RBF network
 		else if (input == 2) {
@@ -213,6 +217,27 @@ public class Main {
 			
 			//create the RBF network with inputted parameters
 			Network RBF = new Network(inputs, gaussians, outputs, actFun, outFun);
+			//train with chosen training method
+			/*
+			int train = 0;
+			do {
+				try {
+					System.out.println("Choose a training function:");
+					System.out.println("1. Something1");
+					System.out.println("2. Something Clustering");
+					System.out.println("3. Something3");
+					train = in.nextInt();
+					valid = true;
+				}
+				catch (Exception e) {
+					System.out.println("That is not an integer. Please enter an integer.\n");
+					valid = false;
+					in.nextLine();
+				}
+			} while (valid == false);
+			//train
+			*/
+
 		}
 		else {
 			System.out.println("Exiting.");
