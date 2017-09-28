@@ -54,18 +54,20 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			do {
-				try {
-					System.out.println("How many hidden nodes will there be?");
-					hidNode = in.nextInt();
-					valid = true;
-				}
-				catch (Exception e) {
-					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;
-					in.nextLine();
-				}
-			} while (valid == false);
+			if (hidLayer != 0) {	
+				do {
+					try {
+						System.out.println("How many hidden nodes will there be?");
+						hidNode = in.nextInt();
+						valid = true;
+					}
+					catch (Exception e) {
+						System.out.println("That is not an integer. Please enter an integer.\n");
+						valid = false;
+						in.nextLine();
+					}
+				} while (valid == false);
+			}
 			do {
 				try {
 					System.out.println("How many output nodes will there be?");
@@ -82,8 +84,8 @@ public class Main {
 				try {
 					System.out.println("Choose an activation function for the input and hidden layers:");
 					System.out.println("1. Linear: Adeline");
-					System.out.println("1. Sigmoidal: Logistic");
-					System.out.println("1. Sigmoidal: Hyperbolic Tangent");
+					System.out.println("2. Sigmoidal: Logistic");
+					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
 					actFun = in.nextInt();
 					valid = true;
 				}
@@ -97,8 +99,8 @@ public class Main {
 				try {
 					System.out.println("Choose an activation function for the output layer:");
 					System.out.println("1. Linear: Adeline");
-					System.out.println("1. Sigmoidal: Logistic");
-					System.out.println("1. Sigmoidal: Hyperbolic Tangent");
+					System.out.println("2. Sigmoidal: Logistic");
+					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
 					outFun = in.nextInt();
 					valid = true;
 				}
