@@ -6,7 +6,7 @@ public class Layer {
 		
 	}
 	
-	public void addNode() {
+	public void addNode(Neuron n) {
 		
 	}
 
