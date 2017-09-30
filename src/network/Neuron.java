@@ -9,7 +9,7 @@ public class Neuron {
 	
 	public void activate() {
 		switch (actFun) {
-		case 1:						//linear function (Adeline?)
+		case 1:						//linear function
 			break;
 		case 2:						//sigmoidal - logistic
 			break;

@@ -1,7 +1,7 @@
 package network;
-/* Notes: need to read in a data file, probably
+/* Notes: need to read in a data file
  * - need to add a connection from each node in 1 layer to every node in the next
- * - backprop is how MLP learns, but RBF we have to choose 3 algorithms
+ * - backprop is how MLP learns, but RBF we have to choose 3 algorithms --> Gaussian basis functions/radial basis kernels
  * 
  */
 import java.util.Scanner;
@@ -97,7 +97,7 @@ public class Main {
 			do {
 				try {
 					System.out.println("Choose an activation function for the input and hidden layers:");
-					System.out.println("1. Linear: Adeline");
+					System.out.println("1. Linear");
 					System.out.println("2. Sigmoidal: Logistic");
 					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
 					actFun = in.nextInt();
@@ -112,7 +112,7 @@ public class Main {
 			do {
 				try {
 					System.out.println("Choose an activation function for the output layer:");
-					System.out.println("1. Linear: Adeline");
+					System.out.println("1. Linear");
 					System.out.println("2. Sigmoidal: Logistic");
 					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
 					outFun = in.nextInt();
@@ -187,7 +187,7 @@ public class Main {
 			do {
 				try {
 					System.out.println("Choose an activation function for the input and hidden layers:");
-					System.out.println("1. Linear: Adeline");
+					System.out.println("1. Linear");
 					System.out.println("2. Sigmoidal: Logistic");
 					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
 					actFun = in.nextInt();
@@ -202,7 +202,7 @@ public class Main {
 			do {
 				try {
 					System.out.println("Choose an activation function for the output layer:");
-					System.out.println("1. Linear: Adeline");
+					System.out.println("1. Linear");
 					System.out.println("2. Sigmoidal: Logistic");
 					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
 					outFun = in.nextInt();
@@ -223,9 +223,9 @@ public class Main {
 			do {
 				try {
 					System.out.println("Choose a training function:");
-					System.out.println("1. Something1");
-					System.out.println("2. Something Clustering");
-					System.out.println("3. Something3");
+					for (int i = 0; i < gaussians; i++) {
+						System.out.println(i + ". <<basis function name>>");
+					}
 					train = in.nextInt();
 					valid = true;
 				}
