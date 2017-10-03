@@ -1,39 +1,50 @@
 package network;
 
+import java.util.ArrayList;
+
 public class Network {
-	private int hidLayer;
-	public Network(int inputs, int hidLayer, int hidNode, int outputs, int actFun, int outFun) {	//constructor for MLF network
-		this.hidLayer = hidLayer;
-		Layer in = new Layer();											//create input layer
-		for (int i = 0; i < inputs; i++) {
-			in.addNode(new Neuron(actFun));								//create node for each input
+	private Layer inLayer;
+	private ArrayList<Layer> hidLayers;
+	private Layer outLayer;
+	
+	/*
+	 * Create a MLP network
+	 * @param numInputs: number of input nodes
+	 * @param numHidLayers: number of hidden layers
+	 * @param numHidNodes: number of nodes in hidden layers
+	 * @param numOutputs: number of output nodes
+	 * @param actFun: type of activation function for nodes 
+	 */
+	public Network(int numInputs, int numHidLayers, int numHidNodes, int numOutputs, int actFun) {
+		//create input layer with inputs number of nodes, node type of 0, and no activation function
+		inLayer = new Layer(numInputs, 0, 0);	
+		
+		//create hidden layers with hidNode number of nodes, node type of 0, and given activation function
+		hidLayers = new ArrayList<Layer>();
+		for(int i = 0; i < numHidLayers; i++){
+			hidLayers.add(new Layer(numHidNodes, 0, actFun));
 		}
-		for (int i = 0; i < hidLayer; i++) {
-			Layer l = new Layer();
-			for (int j = 0; j < hidNode; j++) {		
-				l.addNode(new Neuron(actFun));
-			}
-		}
-		Layer out = new Layer();										//create output layer
-		for (int i = 0; i < outputs; i++) {
-			out.addNode(new Neuron(outFun));							//create node for each output
-		}
+		
+		//create output layer with outputs number of nodes, node type of 0, and linear activation function
+		outLayer = new Layer(numOutputs, 0, 1);									
 	}
-	public Network(int inputs, int gauss, int outputs, int actFun, int outFun) {					//constructor for RBF network
-		hidLayer = 1;													//hidden layer is static (1)
-		Layer in = new Layer();											//create input layer
-		for (int i = 0; i < inputs; i++) {
-			in.addNode(new Neuron(actFun));								//create node for each input
-		}
-		/* 	Layer l = new Layer();										//for adding hidden nodes - we need to decide on what number to use
-		 * 	for (int i = 0; i < #; i++) {
-		 * 		l.addNode(new Neuron(actFun));
-		 * }
-		 */
-		Layer out = new Layer();										//create output layer
-		for (int i = 0; i < outputs; i++) {
-			out.addNode(new Neuron(outFun));							//create node for each output
-		}
+	
+	/*
+	 * Create an RBF network
+	 * @param numInputs: number of input nodes
+	 * @param numGaussians: number of Gaussian nodes
+	 * @param numOutputs: number of output nodes
+	 */
+	public Network(int numInputs, int numGaussians, int numOutputs) {					//constructor for RBF network
+		//create input layer with inputs number of nodes, node type of 0, and no activation function
+		inLayer = new Layer(numInputs, 0, 0);	
+		
+		//create hidden layer with gauss number of nodes, node type of 1, and no activation function
+		hidLayers = new ArrayList<Layer>();
+		hidLayers.add(new Layer(numGaussians, 1, 0));
+		
+		//create output layer with outputs number of nodes, node type of 0, and linear activation function
+		outLayer = new Layer(numOutputs, 0, 1);
 	}
 	
 	public void backprop() {

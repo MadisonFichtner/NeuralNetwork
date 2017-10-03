@@ -1,14 +1,22 @@
 package network;
 
 public class Neuron {
-	//inputs, outputs (connections, that is)
 	private int actFun;
-	public Neuron(int actFun) {		//actFun is activation function - number corresponds to which function to use (methods for each)
-		
+	private int type;
+	
+	/*
+	 * @param actFun: activation function to be used
+	 * @param type: type of neuron - 0 for weighted sum, 1 for Gaussian
+	 */
+	public Neuron(int type, int actFun) {	
+		this.actFun = actFun;
+		this.type = type;
 	}
 	
 	public void activate() {
 		switch (actFun) {
+		case 0:						//no activation function -- don't change output
+			break;
 		case 1:						//linear function
 			break;
 		case 2:						//sigmoidal - logistic
