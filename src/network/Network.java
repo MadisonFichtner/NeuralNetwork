@@ -39,7 +39,7 @@ public class Network {
 		//add connections from each hidden layer to the next hidden layer with initial weights of 1
 		for(int i = 0; i < numHidLayers-1; i ++){
 			for(int j = 0; j < numHidNodes; j++){
-				for(int k = 0; k < numHidLayers; k++){
+				for(int k = 0; k < numHidNodes; k++){
 					hidLayers.get(i).getNeuron(j).addConnection(hidLayers.get(i+1).getNeuron(k), 1);
 				}
 			}
@@ -89,7 +89,7 @@ public class Network {
 		type = 2;
 	}
 
-	public double calcError(){
+	public double calcError(double result, double desired){
 		return 0.0;
 	}
 
@@ -104,36 +104,39 @@ public class Network {
 		}
 	}
 
-	public void train(){
+	/*
+	 * Trains the neural network
+	 * @param inputs: an array which stores the input values of a Rosenbrock function
+	 * @param output: stores the output value from the Rosenbrock function with given x values
+	 */
+	public void train(double inputs[], double output){
 		// 1. It should run the inputs through the network and get an output
 		// 2. Then call calcError() with the output and the desired output to calculate error
 		// 3. Then call backprop() with the value of the error
 		// 4. Repeat with different input and output values
-		if(type == 1){
-			//initialize input layer
-			for(int i = 0; i < inLayer.size(); i++){
-				inLayer.getNeuron(i).setOutput(5);
-			}
-
-			//calculate hidden layers outputs
-			for(int i = 0; i < hidLayers.size(); i++){
-				for(int j = 0; j < hidLayers.get(i).size(); j++){
-					hidLayers.get(i).getNeuron(j).calculate();
-				}
-			}
-
-			//calculate output layer outputs
-			for(int i = 0; i < outLayer.size(); i++){
-				outLayer.getNeuron(i).calculate();
-			}
-
-			//calculate error and back propagate
-			double error = calcError();
-			backprop(error);
+		
+		//initialize input layer
+		for(int i = 0; i < inLayer.size(); i++){
+			inLayer.getNeuron(i).setOutput(inputs[i]);
 		}
-		else if(type == 2){
 
+		//calculate hidden layers outputs
+		for(int i = 0; i < hidLayers.size(); i++){
+			for(int j = 0; j < hidLayers.get(i).size(); j++){
+				hidLayers.get(i).getNeuron(j).calculate();
+			}
 		}
+
+		//calculate output layer outputs
+		for(int i = 0; i < outLayer.size(); i++){
+			outLayer.getNeuron(i).calculate();
+		}
+		
+		System.out.println("Output of Network: " + outLayer.getNeuron(0).getOutput());
+
+		//calculate error and back propagate
+		double error = calcError(outLayer.getNeuron(0).getOutput(), output);
+		backprop(error);
 	}
 
 	//prints out information about network

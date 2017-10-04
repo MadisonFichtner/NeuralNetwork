@@ -198,6 +198,11 @@ public class Main {
 		}
 		in.close();
 
+		//print network
 		network.printNetwork();
+		
+		//train network
+		double inputs[] = {1,2,3};
+		network.train(inputs, 4);
 	}
 }
