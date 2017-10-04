@@ -34,6 +34,10 @@ public class Layer {
 		return neurons.get(index);
 	}
 
+	public int size(){
+		return neurons.size();
+	}
+
 	//prints out information about layer
 	public void printLayer(int num){
 		System.out.println("Layer " + num + ":");

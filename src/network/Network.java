@@ -89,7 +89,11 @@ public class Network {
 		type = 2;
 	}
 
-	public void backprop(){
+	public double calcError(){
+		return 0.0;
+	}
+
+	public void backprop(double error){
 		//adjust all weights for MLP
 		//adjust only the weights between gaussian layer and output layer
 		if(type == 1){
@@ -106,7 +110,26 @@ public class Network {
 		// 3. Then call backprop() with the value of the error
 		// 4. Repeat with different input and output values
 		if(type == 1){
+			//initialize input layer
+			for(int i = 0; i < inLayer.size(); i++){
+				inLayer.getNeuron(i).setOutput(5);
+			}
 
+			//calculate hidden layers outputs
+			for(int i = 0; i < hidLayers.size(); i++){
+				for(int j = 0; j < hidLayers.get(i).size(); j++){
+					hidLayers.get(i).getNeuron(j).calculate();
+				}
+			}
+
+			//calculate output layer outputs
+			for(int i = 0; i < outLayer.size(); i++){
+				outLayer.getNeuron(i).calculate();
+			}
+
+			//calculate error and back propagate
+			double error = calcError();
+			backprop(error);
 		}
 		else if(type == 2){
 

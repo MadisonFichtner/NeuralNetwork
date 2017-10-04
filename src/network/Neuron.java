@@ -6,6 +6,7 @@ public class Neuron {
 	private int actFun;
 	private int type;
 	private ArrayList<Connection> connections;
+	private double output;
 
 	/*
 	 * @param actFun: activation function to be used
@@ -32,6 +33,10 @@ public class Neuron {
 
 	public void addConnection(Neuron n, double weight){
 		connections.add(new Connection(this, n, weight));
+	}
+
+	public void calculate(){
+		output = 7;
 	}
 
 	//prints out info about neuron
@@ -62,5 +67,13 @@ public class Neuron {
 		for(int i = 0; i < connections.size(); i++){
 			System.out.println("\t  Connection " + (i+1) + " Weight: " + connections.get(i).getWeight());
 		}
+	}
+
+	public double getOutput(){
+		return output;
+	}
+
+	public void setOutput(double value){
+		output = value;
 	}
 }
