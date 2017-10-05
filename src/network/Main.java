@@ -2,16 +2,17 @@ package network;
 /* Notes: need to read in a data file
  * - need to add a connection from each node in 1 layer to every node in the next
  * - backprop is how MLP learns, but RBF we have to choose 3 algorithms --> Gaussian basis functions/radial basis kernels
- * 
+ *
  */
 import java.util.Scanner;
 
-public class Main {	
-	
+public class Main {
+
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);																	//create scanner for input
 		boolean valid = true;																					//flag variable for correct user input
 		int input = 0;
+		Network network = null;
 		//this block prompts the user for what kind of network to create - opening menu
 		do {
 			valid = true;
@@ -29,12 +30,12 @@ public class Main {
 				in.nextLine();		//clear input buffer
 			}
 		} while(valid == false);
-		
+
 		//if the user creates an MLP
 		if (input == 1) {
-			int inputs = 0, hidLayer = 0, hidNode = 0, outputs = 0, actFun = 0, outFun = 0;
+			int inputs = 0, hidLayer = 0, hidNode = 0, outputs = 0, actFun = 0;
 			valid = true;
-			
+
 			//grab number of input nodes (with error checking)
 			do {
 				try {
@@ -48,7 +49,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			//grab number of hidden layers (with error checking)
 			do {
 				try {
@@ -62,9 +63,9 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			//grab number of hidden nodes if there are hidden layers (with error checking)
-			if (hidLayer != 0) {	
+			if (hidLayer != 0) {
 				do {
 					try {
 						System.out.println("How many hidden nodes will there be?");
@@ -78,7 +79,7 @@ public class Main {
 					}
 				} while (valid == false);
 			}
-			
+
 			//grab number of output nodes (with error checking)
 			do {
 				try {
@@ -92,11 +93,11 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			//let the user choose an activation function from a list (with error checking)
 			do {
 				try {
-					System.out.println("Choose an activation function for the input and hidden layers:");
+					System.out.println("Choose an activation function for the hidden layers:");
 					System.out.println("1. Linear");
 					System.out.println("2. Sigmoidal: Logistic");
 					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
@@ -109,38 +110,22 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			do {
-				try {
-					System.out.println("Choose an activation function for the output layer:");
-					System.out.println("1. Linear");
-					System.out.println("2. Sigmoidal: Logistic");
-					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
-					outFun = in.nextInt();
-					valid = true;
-				}
-				catch (Exception e) {
-					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;
-					in.nextLine();
-				}
-			} while (valid == false);
-			
+
 			//finally, create a MLP with all the information needed initially
-			Network MLP = new Network(inputs, hidLayer, hidNode, outputs, actFun, outFun);
-			MLP.backprop();
+			network = new Network(inputs, hidLayer, hidNode, outputs, actFun);
 		}
-		
-		
+
+
 		//STILL NEEDS TRAINING FUNCTIONS AND CORRESPONDING MENU FOR RBF
 		/*	from video: e^(-Beta * ||x - c||^2)
-		 * 
+		 *
 		 */
-		
+
 		//if the user chooses to create an RBF network
 		else if (input == 2) {
-			int inputs = 0, gaussians = 0, outputs = 0, actFun = 0, outFun = 0;
+			int inputs = 0, gaussians = 0, outputs = 0;
 			valid = true;
-			
+
 			//grab number of input nodes (with error checking)
 			do {
 				try {
@@ -154,7 +139,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			//grab number of Gaussians (with error checking)
 			do {
 				try {
@@ -168,7 +153,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			//grab number of output nodes (with error checking)
 			do {
 				try {
@@ -182,41 +167,9 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
-			//let the user choose an activation function from a list (with error checking)
-			do {
-				try {
-					System.out.println("Choose an activation function for the input and hidden layers:");
-					System.out.println("1. Linear");
-					System.out.println("2. Sigmoidal: Logistic");
-					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
-					actFun = in.nextInt();
-					valid = true;
-				}
-				catch (Exception e) {
-					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;
-					in.nextLine();
-				}
-			} while (valid == false);
-			do {
-				try {
-					System.out.println("Choose an activation function for the output layer:");
-					System.out.println("1. Linear");
-					System.out.println("2. Sigmoidal: Logistic");
-					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
-					outFun = in.nextInt();
-					valid = true;
-				}
-				catch (Exception e) {
-					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;
-					in.nextLine();
-				}
-			} while (valid == false);
-			
-			//create the RBF network with inputted parameters
-			Network RBF = new Network(inputs, gaussians, outputs, actFun, outFun);
+
+			//create the RBF network with inputed parameters
+			network = new Network(inputs, gaussians, outputs);
 			//train with chosen training method
 			/*
 			int train = 0;
@@ -244,5 +197,7 @@ public class Main {
 			System.exit(0);
 		}
 		in.close();
+
+		network.printNetwork();
 	}
 }

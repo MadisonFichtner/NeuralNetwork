@@ -3,7 +3,7 @@ package network;
 public class Connection {
 	private Neuron from, to;
 	private double weight;
-	
+
 	public Connection(Neuron from, Neuron to, double weight) {
 		this.from = from;
 		this.to = to;
@@ -17,5 +17,8 @@ public class Connection {
 	}
 	public double getWeight() {
 		return weight;
+	}
+	public void setWeight(double w){
+		weight = w;
 	}
 }
