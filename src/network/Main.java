@@ -57,9 +57,10 @@ public class Main {
 				}
 			} while (valid == false);
 			//initialize input array
-			int[] p = new int[inputs];
+			double[] p = new double[inputs];
 			for (int i = 0; i < inputs; i++) {
 				p[i] = i;
+				p[i] = p[i] / 10;
 			}
 			File outfile = null;
 			PrintWriter writer = null;
@@ -70,16 +71,19 @@ public class Main {
 			} catch (Exception e) {
 				System.out.println("Something went wrong generating the output file.");
 			}
-			int total;
+			double total;
 			//for all the input values
 			for (int i = 0; i < inputs - 1; i++) {
 				total = 0;
+				double x1 = p[i];
+				double x2 = p[i + 1];
+				writer.print(x1 + ", ");
 				//loop through (depending on the dimension) and calculate function based on that
 				for (int j = 0; j < n - 1; j++) {
-					int x1 = p[i];
-					int x2 = p[i + 1];
 					total += (Math.pow((1 - x1), n) + (100 * Math.pow(x2 - Math.pow(x1, n), n)));
-					writer.print(x1 + ", " + x2 + ", ");
+					x1 += 0.1;
+					x2 += 0.1;
+					writer.print(x2 + ", ");
 				}
 				//after each set of calculations (each output generated) print the results
 				writer.println(total);
