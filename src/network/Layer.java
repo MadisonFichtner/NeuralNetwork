@@ -41,6 +41,29 @@ public class Layer {
 	//prints out information about layer
 	public void printLayer(int num){
 		System.out.println("Layer " + num + ":");
+
+		if(nodeType == 0){
+			System.out.println("\tNeuron Type: Weighted Sum");
+			switch(actFun){
+			case 0:
+				System.out.println("\tActivation Function: None");
+				break;
+			case 1:
+				System.out.println("\tActivation Function: Linear");
+				break;
+			case 2:
+				System.out.println("\tActivation Function: Logistic");
+				break;
+			case 3:
+				System.out.println("\tActivation Function: Hyperbolic Tangent");
+				break;
+			}
+		}
+		else{
+			System.out.println("\tNeuron Type: Gaussian");
+			System.out.println("\t  Activation Function: None");
+		}
+
 		for(Neuron n : neurons){
 			n.printNeuron(neurons.indexOf(n)+1);
 		}
