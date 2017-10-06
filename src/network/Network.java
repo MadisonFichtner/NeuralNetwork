@@ -114,7 +114,7 @@ public class Network {
 		// 2. Then call calcError() with the output and the desired output to calculate error
 		// 3. Then call backprop() with the value of the error
 		// 4. Repeat with different input and output values
-		
+
 		//initialize input layer
 		for(int i = 0; i < inLayer.size(); i++){
 			inLayer.getNeuron(i).setOutput(inputs[i]);
@@ -123,16 +123,35 @@ public class Network {
 		//calculate hidden layers outputs
 		for(int i = 0; i < hidLayers.size(); i++){
 			for(int j = 0; j < hidLayers.get(i).size(); j++){
-				hidLayers.get(i).getNeuron(j).calculate();
+				ArrayList<Double> ins = new ArrayList<Double>();	//inputs to the neuron
+				ArrayList<Double> weights = new ArrayList<Double>();//corresponding weights to the neuron
+				if(i == 0){
+					for(int k = 0; k < inLayer.size(); k++){
+						ins.add(inLayer.getNeuron(k).getOutput());
+						weights.add(inLayer.getNeuron(k).getWeightTo(j));
+						hidLayers.get(0).getNeuron(j).calculate(ins, weights);
+					}
+				}
+				else{
+					for(int k = 0; k < hidLayers.get(i-1).size(); k++){
+						ins.add(hidLayers.get(i-1).getNeuron(k).getOutput());
+						weights.add(hidLayers.get(i-1).getNeuron(k).getWeightTo(j));
+						hidLayers.get(i).getNeuron(j).calculate(ins, weights);
+					}
+				}
 			}
 		}
 
 		//calculate output layer outputs
 		for(int i = 0; i < outLayer.size(); i++){
-			outLayer.getNeuron(i).calculate();
+			ArrayList<Double> ins = new ArrayList<Double>();	//inputs to the neuron
+			ArrayList<Double> weights = new ArrayList<Double>();//corresponding weights to the neuron
+			for(int j = 0; j < hidLayers.get(hidLayers.size()-1).size(); j++){
+				ins.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getOutput());
+				weights.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getWeightTo(i));
+				outLayer.getNeuron(i).calculate(ins, weights);
+			}
 		}
-		
-		System.out.println("Output of Network: " + outLayer.getNeuron(0).getOutput());
 
 		//calculate error and back propagate
 		double error = calcError(outLayer.getNeuron(0).getOutput(), output);
