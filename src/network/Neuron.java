@@ -40,13 +40,18 @@ public class Neuron {
 		connections.add(new Connection(this, n, weight));
 	}
 
+	/*
+	 * calculates the output of the neuron
+	 * @param ins: inputs to the neuron
+	 * @param weights: corresponding weights of inputs
+	 */
 	public void calculate(ArrayList<Double> ins, ArrayList<Double> weights){
 		if(type == 0){	//calculate weighted sum if it is a weighted sum neuron
 			output = 0;
 			for(int i = 0; i < ins.size(); i++){
 				output+=ins.get(i)*weights.get(i);
 			}
-			activate();
+			activate(); //call activation function to adjust output
 		}
 		else{	//calculate output using radial basis function
 			double sigma = 1;  //this needs to be tuned
@@ -60,7 +65,7 @@ public class Neuron {
 
 			double distance = 1;
 
-			output = -(Math.pow(distance, 2)/(2*Math.pow(sigma, 2)));
+			output = -(Math.pow(distance, 2)/(2*Math.pow(sigma, 2)));	//radial basis function
 		}
 	}
 
