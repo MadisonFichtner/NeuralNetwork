@@ -2,7 +2,6 @@ package network;
 import java.io.PrintWriter;
 /* Notes: need to read in a data file
  * - need to add a connection from each node in 1 layer to every node in the next
- * - backprop is how MLP learns, but RBF we have to choose 3 algorithms --> Gaussian basis functions/radial basis kernels
  *
  */
 import java.util.Scanner;
@@ -12,8 +11,9 @@ public class Main {
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);																	//create scanner for input
 		boolean valid = true;																					//flag variable for correct user input
-		int input = 0, n = 0;
+		int input = 0, n = 0, inputs = 0;												//inputs here is #of inputs; input is user choice
 		Network network = null;
+		
 		//opening menu
 		do {
 			valid = true;
@@ -31,7 +31,6 @@ public class Main {
 		
 		//entering the dimensions
 		if (input == 1) {		//user chose to create new output file
-			int points = 0;
 			do {
 				valid = true;
 				try {
@@ -48,7 +47,7 @@ public class Main {
 				valid = true;
 				try {
 					System.out.println("Please enter the number of data points you want:");
-					points = in.nextInt();
+					inputs = in.nextInt();
 				}
 				catch (Exception e) {
 					System.out.println("That is not an integer. Please enter an integer.\n");
@@ -56,13 +55,18 @@ public class Main {
 					in.nextLine();		//clear input buffer
 				}
 			} while (valid == false);
-			int[] p = new int[points];
-			for (int i = 0; i < points; i++) {
+			//initialize input array
+			int[] p = new int[inputs];
+			for (int i = 0; i < inputs; i++) {
 				p[i] = i;
 			}
 			int total = 0;
 			for (int i = 1; i < n; i++) {
 				total += (Math.pow((1 - p[i]), n) + (100 * Math.pow(p[i + 1] - Math.pow(p[i], n), n)));
+				
+				
+				
+				//FOCUS WORK HERE
 			}
 			try {
 				PrintWriter writer = new PrintWriter("data.txt", "UTF-8");
@@ -93,22 +97,8 @@ public class Main {
 
 		//if the user creates an MLP
 		if (input == 1) {
-			int inputs = 0, hidLayer = 0, hidNode = 0, outputs = 0, actFun = 0;
+			int hidLayer = 0, hidNode = 0, outputs = 0, actFun = 0;
 			valid = true;
-
-			//grab number of input nodes (with error checking)
-			do {
-				try {
-					System.out.println("How many input nodes will there be?");
-					inputs = in.nextInt();
-					valid = true;
-				}
-				catch (Exception e) {
-					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;
-					in.nextLine();
-				}
-			} while (valid == false);
 
 			//grab number of hidden layers (with error checking)
 			do {
@@ -183,22 +173,8 @@ public class Main {
 
 		//if the user chooses to create an RBF network
 		else if (input == 2) {
-			int inputs = 0, gaussians = 0, outputs = 0;
+			int gaussians = 0, outputs = 0;
 			valid = true;
-
-			//grab number of input nodes (with error checking)
-			do {
-				try {
-					System.out.println("How many input nodes will there be?");
-					inputs = in.nextInt();
-					valid = true;
-				}
-				catch (Exception e) {
-					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;
-					in.nextLine();
-				}
-			} while (valid == false);
 
 			//grab number of Gaussians (with error checking)
 			do {
@@ -262,7 +238,7 @@ public class Main {
 		network.printNetwork();
 		
 		//train network
-		double inputs[] = {1,2,3};
-		network.train(inputs, 4);
+		double example[] = {1,2,3};
+		network.train(example, 4);
 	}
 }
