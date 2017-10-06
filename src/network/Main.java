@@ -1,4 +1,5 @@
 package network;
+import java.io.PrintWriter;
 /* Notes: need to read in a data file
  * - need to add a connection from each node in 1 layer to every node in the next
  * - backprop is how MLP learns, but RBF we have to choose 3 algorithms --> Gaussian basis functions/radial basis kernels
@@ -11,9 +12,68 @@ public class Main {
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);																	//create scanner for input
 		boolean valid = true;																					//flag variable for correct user input
-		int input = 0;
+		int input = 0, n = 0;
 		Network network = null;
-		//this block prompts the user for what kind of network to create - opening menu
+		//opening menu
+		do {
+			valid = true;
+			try {
+				System.out.println("Would you like to create a new data set?\n1. Yes\n2. No");
+				System.out.print(">");
+				input = in.nextInt();
+			}
+			catch (Exception e) {
+				System.out.println("That is not an integer. Please enter an integer.\n");
+				valid = false;		//input is invalid, flag
+				in.nextLine();		//clear input buffer
+			}
+		} while (valid == false);
+		
+		//entering the dimensions
+		if (input == 1) {		//user chose to create new output file
+			int points = 0;
+			do {
+				valid = true;
+				try {
+					System.out.println("Please enter the number of dimensions for the Rosenbrock function:");
+					n = in.nextInt();
+				}
+				catch (Exception e) {
+					System.out.println("That is not an integer. Please enter an integer.\n");
+					valid = false;		//input is invalid, flag
+					in.nextLine();		//clear input buffer
+				}
+			} while (valid == false);
+			do {
+				valid = true;
+				try {
+					System.out.println("Please enter the number of data points you want:");
+					points = in.nextInt();
+				}
+				catch (Exception e) {
+					System.out.println("That is not an integer. Please enter an integer.\n");
+					valid = false;		//input is invalid, flag
+					in.nextLine();		//clear input buffer
+				}
+			} while (valid == false);
+			int[] p = new int[points];
+			for (int i = 0; i < points; i++) {
+				p[i] = i;
+			}
+			int total = 0;
+			for (int i = 1; i < n; i++) {
+				total += (Math.pow((1 - p[i]), n) + (100 * Math.pow(p[i + 1] - Math.pow(p[i], n), n)));
+			}
+			try {
+				PrintWriter writer = new PrintWriter("data.txt", "UTF-8");
+				
+			} catch (Exception e) {
+				System.out.println("Something went wrong generating the output file.");
+			}
+		}
+		
+		//this block prompts the user for what kind of network to create
+		input = 0;
 		do {
 			valid = true;
 			try {
