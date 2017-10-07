@@ -242,11 +242,10 @@ public class Main {
 			System.exit(0);
 		}
 		in.close();
+		//train network
+		network.train(samples.get(0).getInputs(), samples.get(0).getOutput());
 
 		//print network
 		network.printNetwork();
-
-		//train network
-		network.train(samples.get(0).getInputs(), samples.get(0).getOutput());
 	}
 }
