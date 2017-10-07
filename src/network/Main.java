@@ -239,6 +239,11 @@ public class Main {
 			System.exit(0);
 		}
 		in.close();
+
+		if(network.getType() == 2){
+			network.setCenters(samples);
+		}
+
 		//train network
 		network.train(samples.get(0).getInputs(), samples.get(0).getOutput());
 
