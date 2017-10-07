@@ -12,7 +12,7 @@ public class Main {
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);																	//create scanner for input
 		boolean valid = true;																					//flag variable for correct user input
-		int input = 0, n = 0, inputs = 0;																		//inputs here is #of inputs; input is user choice
+		int input = 0, numInputs = 0, numDataPoints = 0;														//numInputs here is #of input nodes; input is user choice
 		Network network = null;
 
 		//opening menu - prompt user to create a new data set
@@ -38,7 +38,7 @@ public class Main {
 				valid = true;
 				try {
 					System.out.println("Please enter the number of dimensions for the Rosenbrock function:");
-					n = in.nextInt();
+					numInputs = in.nextInt();
 				}
 				catch (Exception e) {
 					System.out.println("That is not an integer. Please enter an integer.\n");
@@ -52,7 +52,7 @@ public class Main {
 				valid = true;
 				try {
 					System.out.println("Please enter the number of data points you want:");
-					inputs = in.nextInt()+1;
+					numDataPoints = in.nextInt();
 				}
 				catch (Exception e) {
 					System.out.println("That is not an integer. Please enter an integer.\n");
@@ -61,12 +61,6 @@ public class Main {
 				}
 			} while (valid == false);
 
-			//initialize input array
-			double[] p = new double[inputs];			//p for points
-			for (int i = 0; i < inputs; i++) {
-				p[i] = i;
-				p[i] = p[i] / 10;						//enter input list in tenths
-			}
 			File outfile = null;						//create output file
 			PrintWriter writer = null;
 			try {
@@ -78,18 +72,19 @@ public class Main {
 			}
 
 			//for all the input values, set total = 0 and run through all the inputs
-			for (int i = 0; i < inputs - 1; i++) {
-				double x1 = p[i];
-				double x2 = p[i + 1];
-				double[] ins = new double[n];		//array of inputs
+			double firstNumber = 0;
+			for (int i = 0; i < numDataPoints; i++) {
+				double x1 = firstNumber;
+				double x2 = firstNumber+.1;
+				double[] ins = new double[numInputs];		//array of inputs
 				double output = 0;
 				ins[0] = x1;
 
 				writer.printf("%.1f, ", x1);
 
 				//loop through (depending on the dimension) and calculate function based on that -- this loop is essentially Sigma in the Rosenbrock function
-				for (int j = 0; j < n-1; j++) {
-					ins[j] = x2;
+				for (int j = 0; j < numInputs-1; j++) {
+					ins[j+1] = x2;
 					writer.printf("%.1f, ", x2);
 					output += (Math.pow((1 - x1), 2) + (100 * Math.pow(x2 - Math.pow(x1, 2), 2)));	//Rosenbrock function
 					x1 += 0.1;
@@ -99,6 +94,8 @@ public class Main {
 
 				//after each set of calculations (each output generated) print the results
 				writer.println(output);
+
+				firstNumber+=.1;
 			}
 			writer.close();
 		}
@@ -191,7 +188,7 @@ public class Main {
 			} while (valid == false);
 
 			//finally, create a MLP with all the information needed initially
-			network = new Network(inputs, hidLayer, hidNode, outputs, actFun);
+			network = new Network(numInputs, hidLayer, hidNode, outputs, actFun);
 		}
 
 
@@ -234,7 +231,7 @@ public class Main {
 			} while (valid == false);
 
 			//create the RBF network with inputed parameters
-			network = new Network(inputs, gaussians, outputs);
+			network = new Network(numInputs, gaussians, outputs);
 
 		}
 		else {
