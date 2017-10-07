@@ -1,9 +1,9 @@
 package network;
 
 public class Sample {
-	private int[] inputs;
+	private double[] inputs;
 	
-	public Sample(int[] inputs) {
+	public Sample(double[] inputs) {
 		this.inputs = inputs;
 	}
 }

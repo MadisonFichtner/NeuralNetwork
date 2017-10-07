@@ -1,6 +1,7 @@
 package network;
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 /* Notes: need to read in a data file
  * - need to add a connection from each node in 1 layer to every node in the next
  *
@@ -8,7 +9,6 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Main {
-
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);																	//create scanner for input
 		boolean valid = true;																					//flag variable for correct user input
@@ -72,19 +72,28 @@ public class Main {
 				System.out.println("Something went wrong generating the output file.");
 			}
 			double total;
+			ArrayList<Sample> samples = new ArrayList<Sample>();
 			//for all the input values
 			for (int i = 0; i < inputs - 1; i++) {
 				total = 0;
 				double x1 = p[i];
 				double x2 = p[i + 1];
 				writer.print(x1 + ", ");
+				double[] ins = new double[n + 1];
+				int insCount = 0;
+				ins[0] = x1;
+				insCount++;
 				//loop through (depending on the dimension) and calculate function based on that
 				for (int j = 0; j < n - 1; j++) {
 					total += (Math.pow((1 - x1), n) + (100 * Math.pow(x2 - Math.pow(x1, n), n)));
 					x1 += 0.1;
 					x2 += 0.1;
-					writer.print(x2 + ", ");
+					writer.printf("%.1f, ", x2);
+					ins[insCount] = x2;
+					insCount++;
 				}
+				ins[insCount] = total;
+				samples.add(new Sample(ins));			
 				//after each set of calculations (each output generated) print the results
 				writer.println(total);
 			}
