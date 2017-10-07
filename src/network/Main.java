@@ -14,7 +14,7 @@ public class Main {
 		boolean valid = true;																					//flag variable for correct user input
 		int input = 0, n = 0, inputs = 0;																		//inputs here is #of inputs; input is user choice
 		Network network = null;
-		
+
 		//opening menu - prompt user to create a new data set
 		do {
 			valid = true;												//assume input is valid
@@ -29,9 +29,9 @@ public class Main {
 				in.nextLine();											//clear input buffer
 			}
 		} while (valid == false);										//repeat if bad choice
-		
+
 		ArrayList<Sample> samples = new ArrayList<Sample>();			//create list of samples to use - data set essentially
-		
+
 		//entering the dimensions - if the user chooses to create new data set
 		if (input == 1) {
 			do {
@@ -42,28 +42,28 @@ public class Main {
 				}
 				catch (Exception e) {
 					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;		
-					in.nextLine();		
+					valid = false;
+					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			//enter data points (or inputs)
 			do {
 				valid = true;
 				try {
 					System.out.println("Please enter the number of data points you want:");
-					inputs = in.nextInt();
+					inputs = in.nextInt()+1;
 				}
 				catch (Exception e) {
 					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;		
-					in.nextLine();		
+					valid = false;
+					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			//initialize input array
 			double[] p = new double[inputs];			//p for points
-			for (int i = 0; i < inputs; i++) {			
+			for (int i = 0; i < inputs; i++) {
 				p[i] = i;
 				p[i] = p[i] / 10;						//enter input list in tenths
 			}
@@ -72,44 +72,40 @@ public class Main {
 			try {
 				outfile = new File("data.txt");
 				writer = new PrintWriter(outfile, "UTF-8");
-				
+
 			} catch (Exception e) {
 				System.out.println("Something went wrong generating the output file.");
 			}
-			double total;								//this will be the output
-			
+
 			//for all the input values, set total = 0 and run through all the inputs
 			for (int i = 0; i < inputs - 1; i++) {
-				total = 0;									
 				double x1 = p[i];
 				double x2 = p[i + 1];
-				writer.print(x1 + ", ");
-				double[] ins = new double[n + 1];		//array of inputs
-				int insCount = 0;						//index of said array
+				double[] ins = new double[n];		//array of inputs
+				double output = 0;
 				ins[0] = x1;
-				insCount++;
-				
+
+				writer.printf("%.1f, ", x1);
+
 				//loop through (depending on the dimension) and calculate function based on that -- this loop is essentially Sigma in the Rosenbrock function
-				for (int j = 0; j < n - 1; j++) {
-					total += (Math.pow((1 - x1), n) + (100 * Math.pow(x2 - Math.pow(x1, n), n)));	//Rosenbrock function
+				for (int j = 0; j < n-1; j++) {
+					ins[j] = x2;
+					writer.printf("%.1f, ", x2);
+					output += (Math.pow((1 - x1), 2) + (100 * Math.pow(x2 - Math.pow(x1, 2), 2)));	//Rosenbrock function
 					x1 += 0.1;
 					x2 += 0.1;
-					writer.printf("%.1f, ", x2);
-					ins[insCount] = x2;
-					insCount++;
 				}
-				ins[insCount] = total;					//add output to the inputs array
-				samples.add(new Sample(ins));			//create new sample based on that array
-				
+				samples.add(new Sample(ins, output));			//create new sample based on that array
+
 				//after each set of calculations (each output generated) print the results
-				writer.println(total);
+				writer.println(output);
 			}
 			writer.close();
 		}
-		else {	
+		else {
 			//need to add reading in the data set for # of inputs and creating the samples list from the data set -- HERE NATE, HERE BOY
 		}
-		
+
 		//this block prompts the user for what kind of network to create
 		input = 0;										//variable for user input for network
 		do {
@@ -123,8 +119,8 @@ public class Main {
 			}
 			catch (Exception e) {
 				System.out.println("That is not an integer. Please enter an integer.\n");
-				valid = false;		
-				in.nextLine();		
+				valid = false;
+				in.nextLine();
 			}
 		} while(valid == false);
 
@@ -239,26 +235,6 @@ public class Main {
 
 			//create the RBF network with inputed parameters
 			network = new Network(inputs, gaussians, outputs);
-			//train with chosen training method
-			/*
-			int train = 0;
-			do {
-				try {
-					System.out.println("Choose a training function:");
-					for (int i = 0; i < gaussians; i++) {
-						System.out.println(i + ". <<basis function name>>");
-					}
-					train = in.nextInt();
-					valid = true;
-				}
-				catch (Exception e) {
-					System.out.println("That is not an integer. Please enter an integer.\n");
-					valid = false;
-					in.nextLine();
-				}
-			} while (valid == false);
-			//train
-			*/
 
 		}
 		else {
@@ -269,9 +245,8 @@ public class Main {
 
 		//print network
 		network.printNetwork();
-		
+
 		//train network
-		double example[] = {1,2,3};
-		network.train(example, 4);
+		network.train(samples.get(0).getInputs(), samples.get(0).getOutput());
 	}
 }
