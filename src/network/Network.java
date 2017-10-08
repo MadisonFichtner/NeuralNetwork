@@ -54,6 +54,14 @@ public class Network {
 			}
 		}
 
+		if(hidLayers.isEmpty()){	//if there are no hidden layers, connect input layer to output layer
+			for(int i = 0; i < numInputs; i ++){
+				for(int j = 0; j < numOutputs; j++){
+					inLayer.getNeuron(i).addConnection(outLayer.getNeuron(j), 1);
+				}
+			}
+		}
+
 		type = 1;
 	}
 
@@ -147,10 +155,19 @@ public class Network {
 		for(int i = 0; i < outLayer.size(); i++){								//iterate through each neuron in output layer
 			ArrayList<Double> ins = new ArrayList<Double>();					//inputs to the neuron
 			ArrayList<Double> weights = new ArrayList<Double>();				//corresponding weights to the neuron
-			for(int j = 0; j < hidLayers.get(hidLayers.size()-1).size(); j++){	//iterate through each neuron in last hidden layer
-				ins.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getOutput());
-				weights.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getWeightTo(i));
-				outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
+			if(!hidLayers.isEmpty()){											//if there are no hidden layers
+				for(int j = 0; j < hidLayers.get(hidLayers.size()-1).size(); j++){	//iterate through each neuron in last hidden layer
+					ins.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getOutput());
+					weights.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getWeightTo(i));
+					outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
+				}
+			}
+			else{	//calculate output from input layer if there are no hidden layers
+				for(int j = 0; j < inLayer.size(); j++){	//iterate through each neuron in last hidden layer
+					ins.add(inLayer.getNeuron(j).getOutput());
+					weights.add(inLayer.getNeuron(j).getWeightTo(i));
+					outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
+				}
 			}
 		}
 
