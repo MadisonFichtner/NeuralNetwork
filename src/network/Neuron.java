@@ -81,7 +81,7 @@ public class Neuron {
 			System.out.println("\t  Connection " + (i+1) + " Weight: " + connections.get(i).getWeight());
 		}
 
-		System.out.println("\t  Output: " + output);
+		System.out.printf("\t  Output: %.4f\n",output);
 	}
 
 	public double getOutput(){
