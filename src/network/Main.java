@@ -99,10 +99,37 @@ public class Main {
 			}
 			writer.close();
 		}
+		
+		//user chooses not to create data file - assumes one exists already
 		else {
-			//need to add reading in the data set for # of inputs and creating the samples list from the data set -- HERE NATE, HERE BOY
+			try {
+				Scanner s = new Scanner(new File("data.txt"));							//create a new scanner, checks lines of data in file
+				while (s.hasNextLine()) {												//loop while there is another line
+					String line = s.nextLine();											//grab the next line
+					ArrayList<Double> inputs = new ArrayList<Double>();					//create an arraylist for the inputs
+					int counter = 0;													//counter to determine size of input array
+					Scanner lineScan = new Scanner(line);								//create new scanner that checks individual pieces of a line
+					lineScan.useDelimiter(", ");										//separates tokens with a comma, space (as they were inputted that way)
+					while (lineScan.hasNext()) {										//loop while there are still tokens to be read
+						counter++;														//update counter (1 more input)
+						inputs.add(Double.parseDouble(lineScan.next()));				//parse the token to be a double and add to the input arraylist
+					}
+					counter--;															//update counter to reflect input size (total - 1, since last token is output
+					double[] passIn = new double[counter];								//this is the array that will be passed to sample class
+					for (int i = 0; i < counter; i++) {									
+						passIn[i] = inputs.get(i);										//initialize the input array
+					}
+					samples.add(new Sample(passIn, inputs.get(counter)));				//create new sample with input array, output, and add that sample to the list of samples
+					lineScan.close();
+				}
+				s.close();
+			} 
+			catch (Exception e) {
+				System.out.println("File not found.");
+			}
 		}
 
+		
 		//this block prompts the user for what kind of network to create
 		input = 0;										//variable for user input for network
 		do {
