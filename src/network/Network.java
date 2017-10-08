@@ -1,8 +1,10 @@
 package network;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Network {
+	private Random random = new Random();
 	private Layer inLayer;
 	private ArrayList<Layer> hidLayers;
 	private Layer outLayer;
@@ -155,6 +157,18 @@ public class Network {
 		//calculate error and back propagate
 		double error = calcError(outLayer.getNeuron(0).getOutput(), output);
 		backprop(error);
+	}
+
+	public void setCenters(ArrayList<Sample> samples){
+		System.out.println(inLayer.size());
+		for(int i = 0; i < hidLayers.get(0).size(); i++){
+			int center = random.nextInt(samples.size());
+			hidLayers.get(0).getNeuron(i).setCenter(samples.get(center).getInputs());
+		}
+	}
+
+	public int getType(){
+		return type;
 	}
 
 	//prints out information about network

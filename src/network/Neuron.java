@@ -7,7 +7,7 @@ public class Neuron {
 	private int type;	//type of neuron
 	private ArrayList<Connection> connections;
 	private double output;
-	private ArrayList<Double> center; //center of cluster
+	private double[] center; //center of cluster
 
 	/*
 	 * @param actFun: activation function to be used
@@ -17,21 +17,17 @@ public class Neuron {
 		this.actFun = actFun;
 		this.type = type;
 		connections = new ArrayList<Connection>();
-		center = new ArrayList<Double>();
 	}
 
 	public void activate() {
 		switch (actFun) {
-		case 0:						//no activation function -- don't change output
-			break;
-		case 1:						//linear function -- I think this is just the same as no activation function
-
-			break;
 		case 2:						//sigmoidal - logistic
 			output = 1/(1+Math.exp(-output));
 			break;
 		case 3:						//sigmoidal - hyperbolic tangent
 			output = 2/(1+Math.exp(-2*output)) - 1;
+			break;
+		default:					//linear function - no change
 			break;
 		}
 	}
@@ -56,17 +52,20 @@ public class Neuron {
 		else{	//calculate output using radial basis function
 			double sigma = 1;  //this needs to be tuned
 
-			//this is how distance will be calculated once we use k-means clustering to find the center of the radial basis function
-			/*double squaredDistance = 0;
+			double squaredDistance = 0;
 			for(int i = 0; i < ins.size(); i++){
-				squaredDistance += Math.pow(ins.get(i)-center.get(i), 2);
+				squaredDistance += Math.pow(ins.get(i)-center[i], 2);
 			}
-			double distance = Math.sqrt(squaredDistance); */
-
-			double distance = 1;
+			double distance = Math.sqrt(squaredDistance);
 
 			output = -(Math.pow(distance, 2)/(2*Math.pow(sigma, 2)));	//radial basis function
 		}
+	}
+
+	public void setCenter(double[] center){
+		System.out.println(center[0]);
+		this.center = new double[center.length];
+		this.center = center;
 	}
 
 	public double getWeightTo(int index){
