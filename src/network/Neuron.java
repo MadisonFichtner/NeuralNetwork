@@ -21,16 +21,13 @@ public class Neuron {
 
 	public void activate() {
 		switch (actFun) {
-		case 0:						//no activation function -- don't change output
-			break;
-		case 1:						//linear function -- I think this is just the same as no activation function
-
-			break;
 		case 2:						//sigmoidal - logistic
 			output = 1/(1+Math.exp(-output));
 			break;
 		case 3:						//sigmoidal - hyperbolic tangent
 			output = 2/(1+Math.exp(-2*output)) - 1;
+			break;
+		default:					//linear function - no change
 			break;
 		}
 	}
