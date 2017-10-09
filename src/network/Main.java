@@ -197,25 +197,28 @@ public class Main {
 				}
 			} while (valid == false);
 
+			double learningRate = 0;
 			//let the user choose an activation function from a list (with error checking)
 			do {
 				try {
-					System.out.println("Choose an activation function for the hidden layers:");
-					System.out.println("1. Linear");
-					System.out.println("2. Sigmoidal: Logistic");
-					System.out.println("3. Sigmoidal: Hyperbolic Tangent");
-					actFun = in.nextInt();
-					valid = true;
+					System.out.println("What do you want the learning rate to be? (0 - .05)");
+					learningRate = in.nextDouble();
+					if(learningRate > .05 || learningRate < 0)
+					{
+						valid = false;
+						System.out.println("That double is not between 0 and .05");
+					}
+					else
+						valid = true;
 				}
 				catch (Exception e) {
-					System.out.println("That is not an integer. Please enter an integer.\n");
+					System.out.println("That is not an double. Please enter an integer.\n");
 					valid = false;
 					in.nextLine();
-				}
+				} 
 			} while (valid == false);
-
 			//finally, create a MLP with all the information needed initially
-			network = new Network(numInputs, hidLayer, hidNode, outputs, actFun);
+			network = new Network(numInputs, hidLayer, hidNode, outputs, actFun, learningRate);
 		}
 
 
