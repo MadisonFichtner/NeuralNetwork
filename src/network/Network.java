@@ -1,14 +1,14 @@
 package network;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Network {
-	private Random random = new Random();
 	private Layer inLayer;
 	private ArrayList<Layer> hidLayers;
 	private Layer outLayer;
 	private int type;	//what type of network it is
+	private double overallError;
+	private double learningRate;
 
 	/*
 	 * Create an MLP network
@@ -17,8 +17,10 @@ public class Network {
 	 * @param numHidNodes: number of nodes in hidden layers
 	 * @param numOutputs: number of output nodes
 	 * @param actFun: type of activation function for nodes
+	 * @param overallError: the overall calculated error of network
+	 * @param learningRate: learning rate of the network
 	 */
-	public Network(int numInputs, int numHidLayers, int numHidNodes, int numOutputs, int actFun) {
+	public Network(int numInputs, int numHidLayers, int numHidNodes, int numOutputs, int actFun, double learningRate) {
 		//create input layer with inputs number of nodes, node type of 0, and no activation function
 		inLayer = new Layer(numInputs, 0, 0);
 
@@ -55,6 +57,9 @@ public class Network {
 		}
 
 		type = 1;
+		
+		//Learning Rate
+		this.learningRate = learningRate;
 	}
 
 	/*
@@ -91,18 +96,46 @@ public class Network {
 		type = 2;
 	}
 
-	public double calcError(double result, double desired){
-		return 0.0;
-	}
+		// 1. Calculate net input for h1 = w1*i1 + ... wn*in + b1 * 1 (where b is bias node)
+		// 2. Calculate output for h1 = 1/(1+e^(-neth1))
+		// 3. Do exact same thing for output layer using outputs from hidden layer as inputs to get output for each output node
+		// 4. Take squared sum 1/2(target - output)^2 to find total errors
+		public double calcError(double result, double desired){
+			overallError = (.5) * Math.pow((desired - result), 2);
+			return overallError;
+		}	
 
-	public void backprop(double error){
+	public void backprop(double error, double output){
 		//adjust all weights for MLP
 		//adjust only the weights between gaussian layer and output layer
-		if(type == 1){
-
+		if(type == 1){ //MLP
+			//Output layer update
+			//weight(old) + (learning rate * output error * output(neurons i) * output(neurons i+1) * (1-output(neurons i+1)
+			for(int i = 0; i < outLayer.size(); i++)
+			{
+				for(int j = 0; j < hidLayers.get(0).size(); j++)
+				{
+					double updatedWeight = hidLayers.get(0).getNeuron(j).getWeightTo(i);
+					updatedWeight = updatedWeight + (learningRate * (output - hidLayers.get(0).getNeuron(j).getOutput()) * (hidLayers.get(0).getNeuron(j).getOutput() * (1 - hidLayers.get(0).getNeuron(j).getOutput())) * hidLayers.get(0).getNeuron(j).getWeightTo(i));
+					System.out.println(updatedWeight);
+					hidLayers.get(0).getNeuron(j).setWeightTo(i, updatedWeight);
+				}
+			}
+			//Hidden layer updates TODO
 		}
-		else if(type == 2){
-
+		else if(type == 2){ //RBF just do output layer updates
+			//Output Layer Updates
+			for(int i = 0; i < hidLayers.get(0).size(); i++)
+			{
+				for(int j = 0; j< outLayer.size(); j++)
+				{
+					double updatedWeight = hidLayers.get(0).getNeuron(j).getWeightTo(i);
+					//updatedWeight = updatedWeight + (error * hidLayers.get(0).getNeuron(j).getOutput() * (1 - hidLayers.get(0).getNeuron(j).getOutput()));
+					updatedWeight = updatedWeight + ((output - hidLayers.get(0).getNeuron(j).getOutput()) * (hidLayers.get(0).getNeuron(j).getOutput() * (1 - hidLayers.get(0).getNeuron(j).getOutput())) * hidLayers.get(0).getNeuron(j).getWeightTo(i));
+					System.out.println(updatedWeight);
+					hidLayers.get(0).getNeuron(j).setWeightTo(i, updatedWeight);
+				}
+			}
 		}
 	}
 
@@ -153,22 +186,12 @@ public class Network {
 				outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
 			}
 		}
-
+		
+		
 		//calculate error and back propagate
-		double error = calcError(outLayer.getNeuron(0).getOutput(), output);
-		backprop(error);
-	}
-
-	public void setCenters(ArrayList<Sample> samples){
-		System.out.println(inLayer.size());
-		for(int i = 0; i < hidLayers.get(0).size(); i++){
-			int center = random.nextInt(samples.size());
-			hidLayers.get(0).getNeuron(i).setCenter(samples.get(center).getInputs());
-		}
-	}
-
-	public int getType(){
-		return type;
+		double actualOutput = outLayer.getNeuron(0).getOutput();
+		double error = calcError(actualOutput, output);
+		backprop(error, output);
 	}
 
 	//prints out information about network
