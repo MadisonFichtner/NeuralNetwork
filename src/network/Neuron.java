@@ -7,7 +7,7 @@ public class Neuron {
 	private int type;	//type of neuron
 	private ArrayList<Connection> connections;
 	private double output;
-	private ArrayList<Double> center; //center of cluster
+	private double[] center; //center of cluster
 
 	/*
 	 * @param actFun: activation function to be used
@@ -17,7 +17,6 @@ public class Neuron {
 		this.actFun = actFun;
 		this.type = type;
 		connections = new ArrayList<Connection>();
-		center = new ArrayList<Double>();
 	}
 
 	public void activate() {
@@ -68,7 +67,13 @@ public class Neuron {
 			output = -(Math.pow(distance, 2)/(2*Math.pow(sigma, 2)));	//radial basis function
 		}
 	}
-
+	
+	public void setCenter(double[] center){
+		System.out.println(center[0]);
+		this.center = new double[center.length];
+		this.center = center;
+	}
+	
 	public double getWeightTo(int index){
 		return connections.get(index).getWeight();
 	}
@@ -108,3 +113,5 @@ public class Neuron {
 		return connections;
 	}
 }
+
+

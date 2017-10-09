@@ -1,8 +1,10 @@
 package network;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Network {
+	private Random random = new Random();
 	private Layer inLayer;
 	private ArrayList<Layer> hidLayers;
 	private Layer outLayer;
@@ -17,8 +19,6 @@ public class Network {
 	 * @param numHidNodes: number of nodes in hidden layers
 	 * @param numOutputs: number of output nodes
 	 * @param actFun: type of activation function for nodes
-	 * @param overallError: the overall calculated error of network
-	 * @param learningRate: learning rate of the network
 	 */
 	public Network(int numInputs, int numHidLayers, int numHidNodes, int numOutputs, int actFun, double learningRate) {
 		//create input layer with inputs number of nodes, node type of 0, and no activation function
@@ -53,6 +53,14 @@ public class Network {
 		for(int i = 0; i < numHidNodes; i ++){
 			for(int j = 0; j < numOutputs; j++){
 				hidLayers.get(hidLayers.size()-1).getNeuron(i).addConnection(outLayer.getNeuron(j), 1);
+			}
+		}
+
+		if(hidLayers.isEmpty()){	//if there are no hidden layers, connect input layer to output layer
+			for(int i = 0; i < numInputs; i ++){
+				for(int j = 0; j < numOutputs; j++){
+					inLayer.getNeuron(i).addConnection(outLayer.getNeuron(j), 1);
+				}
 			}
 		}
 
@@ -96,14 +104,14 @@ public class Network {
 		type = 2;
 	}
 
-		// 1. Calculate net input for h1 = w1*i1 + ... wn*in + b1 * 1 (where b is bias node)
-		// 2. Calculate output for h1 = 1/(1+e^(-neth1))
-		// 3. Do exact same thing for output layer using outputs from hidden layer as inputs to get output for each output node
-		// 4. Take squared sum 1/2(target - output)^2 to find total errors
-		public double calcError(double result, double desired){
-			overallError = (.5) * Math.pow((desired - result), 2);
-			return overallError;
-		}	
+	// 1. Calculate net input for h1 = w1*i1 + ... wn*in + b1 * 1 (where b is bias node)
+	// 2. Calculate output for h1 = 1/(1+e^(-neth1))
+	// 3. Do exact same thing for output layer using outputs from hidden layer as inputs to get output for each output node
+	// 4. Take squared sum 1/2(target - output)^2 to find total errors
+	public double calcError(double result, double desired){
+		overallError = (.5) * Math.pow((desired - result), 2);
+		return overallError;
+	}	
 
 	public void backprop(double error, double output){
 		//adjust all weights for MLP
@@ -121,7 +129,6 @@ public class Network {
 					hidLayers.get(0).getNeuron(j).setWeightTo(i, updatedWeight);
 				}
 			}
-			//Hidden layer updates TODO
 		}
 		else if(type == 2){ //RBF just do output layer updates
 			//Output Layer Updates
@@ -180,18 +187,38 @@ public class Network {
 		for(int i = 0; i < outLayer.size(); i++){								//iterate through each neuron in output layer
 			ArrayList<Double> ins = new ArrayList<Double>();					//inputs to the neuron
 			ArrayList<Double> weights = new ArrayList<Double>();				//corresponding weights to the neuron
-			for(int j = 0; j < hidLayers.get(hidLayers.size()-1).size(); j++){	//iterate through each neuron in last hidden layer
-				ins.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getOutput());
-				weights.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getWeightTo(i));
-				outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
+			if(!hidLayers.isEmpty()){											//if there are no hidden layers
+				for(int j = 0; j < hidLayers.get(hidLayers.size()-1).size(); j++){	//iterate through each neuron in last hidden layer
+					ins.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getOutput());
+					weights.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getWeightTo(i));
+					outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
+				}
+			}
+			else{	//calculate output from input layer if there are no hidden layers
+				for(int j = 0; j < inLayer.size(); j++){	//iterate through each neuron in last hidden layer
+					ins.add(inLayer.getNeuron(j).getOutput());
+					weights.add(inLayer.getNeuron(j).getWeightTo(i));
+					outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
+				}
 			}
 		}
-		
-		
+
 		//calculate error and back propagate
 		double actualOutput = outLayer.getNeuron(0).getOutput();
 		double error = calcError(actualOutput, output);
 		backprop(error, output);
+	}
+
+	public void setCenters(ArrayList<Sample> samples){
+		System.out.println(inLayer.size());
+		for(int i = 0; i < hidLayers.get(0).size(); i++){
+			int center = random.nextInt(samples.size());
+			hidLayers.get(0).getNeuron(i).setCenter(samples.get(center).getInputs());
+		}
+	}
+
+	public int getType(){
+		return type;
 	}
 
 	//prints out information about network
@@ -202,5 +229,5 @@ public class Network {
 		}
 		outLayer.printLayer(2 + hidLayers.size());
 	}
-
 }
+
