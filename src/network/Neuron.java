@@ -21,16 +21,10 @@ public class Neuron {
 
 	public void activate() {
 		switch (actFun) {
-		case 0:						//no activation function -- don't change output
-			break;
-		case 1:						//linear function -- I think this is just the same as no activation function
-
+		case 1:
 			break;
 		case 2:						//sigmoidal - logistic
 			output = 1/(1+Math.exp(-output));
-			break;
-		case 3:						//sigmoidal - hyperbolic tangent
-			output = 2/(1+Math.exp(-2*output)) - 1;
 			break;
 		}
 	}
@@ -56,15 +50,13 @@ public class Neuron {
 			double sigma = 1;  //this needs to be tuned
 
 			//this is how distance will be calculated once we use k-means clustering to find the center of the radial basis function
-			/*double squaredDistance = 0;
+			double squaredDistance = 0;
 			for(int i = 0; i < ins.size(); i++){
-				squaredDistance += Math.pow(ins.get(i)-center.get(i), 2);
+				squaredDistance += Math.pow(ins.get(i)-center[i], 2);
 			}
-			double distance = Math.sqrt(squaredDistance); */
+			double distance = Math.sqrt(squaredDistance); 
 
-			double distance = 1;
-
-			output = -(Math.pow(distance, 2)/(2*Math.pow(sigma, 2)));	//radial basis function
+			output = Math.exp(-Math.pow(distance, 2)/(2*Math.pow(sigma, 2)));	//radial basis function
 		}
 	}
 	

@@ -21,8 +21,8 @@ public class Network {
 	 * @param actFun: type of activation function for nodes
 	 */
 	public Network(int numInputs, int numHidLayers, int numHidNodes, int numOutputs, int actFun, double learningRate) {
-		//create input layer with inputs number of nodes, node type of 0, and no activation function
-		inLayer = new Layer(numInputs, 0, 0);
+		//create input layer with inputs number of nodes, node type of 0, and a linear activation function
+		inLayer = new Layer(numInputs, 0, 1);
 
 		//create hidden layers with hidNode number of nodes, node type of 0, and given activation function
 		hidLayers = new ArrayList<Layer>();
@@ -76,7 +76,7 @@ public class Network {
 	 * @param numGaussians: number of Gaussian nodes
 	 * @param numOutputs: number of output nodes
 	 */
-	public Network(int numInputs, int numGaussians, int numOutputs) {					//constructor for RBF network
+	public Network(int numInputs, int numGaussians, int numOutputs, double learningRate) {					//constructor for RBF network
 		//create input layer with inputs number of nodes, node type of 0, and no activation function
 		inLayer = new Layer(numInputs, 0, 0);
 
@@ -102,6 +102,7 @@ public class Network {
 		}
 
 		type = 2;
+		this.learningRate = learningRate;
 	}
 
 	// 1. Calculate net input for h1 = w1*i1 + ... wn*in + b1 * 1 (where b is bias node)
@@ -127,13 +128,16 @@ public class Network {
 			//No hidden layers case
 			if(hidLayers.size() == 0)
 			{
+				double delta = 0;
 				//Output layer update
 				for(int i = 0; i < outLayer.size(); i++)
 				{
 					for(int j = 0; j < inLayer.size(); j++)
 					{
+						//Update weights from inLayer to outLayer
 						double updatedWeight = inLayer.getNeuron(j).getWeightTo(i);		//Initializes value of updatedWeight to the original weight 
-						updatedWeight = updatedWeight + (learningRate * (output - outLayer.getNeuron(i).getOutput()) * (outLayer.getNeuron(i).getOutput() * (1 - outLayer.getNeuron(i).getOutput())) * inLayer.getNeuron(j).getOutput());
+						delta = (output - outLayer.getNeuron(i).getOutput());
+						updatedWeight = updatedWeight + (learningRate * delta * inLayer.getNeuron(j).getOutput());
 						inLayer.getNeuron(j).setWeightTo(i, updatedWeight);
 					}
 				}
@@ -206,13 +210,15 @@ public class Network {
 		}
 		else if(type == 2){ //RBF just do output layer updates
 			//Output Layer Updates
-			for(int i = 0; i < outLayer.size(); i++)	//Iterates through number of output nodes
+			double delta = 0;
+			for(int i = 0; i < outLayer.size(); i++)
 			{
-				for(int j = 0; j< inLayer.size(); j++)	//Iterates through number of inLayer nodes
+				for(int j = 0; j < hidLayers.get(0).size(); j++)
 				{
-					double updatedWeight = inLayer.getNeuron(j).getWeightTo(i);	//Initializes value of updatedWeight to the original weight 
-					updatedWeight = updatedWeight + ((output - outLayer.getNeuron(i).getOutput()) * (outLayer.getNeuron(i).getOutput() * (1 - outLayer.getNeuron(i).getOutput())) * inLayer.getNeuron(j).getWeightTo(i));
-					inLayer.getNeuron(j).setWeightTo(i, updatedWeight);
+					double updatedWeight = hidLayers.get(0).getNeuron(j).getWeightTo(i);	//Initializes value of updatedWeight to the original weight 
+					delta = (output - outLayer.getNeuron(i).getOutput());
+					updatedWeight = updatedWeight + (learningRate * delta * hidLayers.get(0).getNeuron(j).getOutput());
+					hidLayers.get(0).getNeuron(j).setWeightTo(i, updatedWeight);
 				}
 			}
 		}

@@ -45,17 +45,11 @@ public class Layer {
 		if(nodeType == 0){
 			System.out.println("\tNeuron Type: Weighted Sum");
 			switch(actFun){
-			case 0:
-				System.out.println("\tActivation Function: None");
-				break;
 			case 1:
 				System.out.println("\tActivation Function: Linear");
 				break;
 			case 2:
 				System.out.println("\tActivation Function: Logistic");
-				break;
-			case 3:
-				System.out.println("\tActivation Function: Hyperbolic Tangent");
 				break;
 			}
 		}

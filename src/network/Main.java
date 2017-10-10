@@ -76,17 +76,17 @@ public class Main {
 			double firstNumber = 0;
 			for (int i = 0; i < numDataPoints; i++) {
 				double x1 = firstNumber;
-				double x2 = firstNumber+.1;
+				double x2 = firstNumber+.01;
 				double[] ins = new double[numInputs];		//array of inputs
 				double output = 0;
 				ins[0] = x1;
 
-				writer.printf("%.1f, ", x1);
+				writer.printf("%.2f, ", x1);
 
 				//loop through (depending on the dimension) and calculate function based on that -- this loop is essentially Sigma in the Rosenbrock function
 				for (int j = 0; j < numInputs-1; j++) {
 					ins[j+1] = x2;
-					writer.printf("%.1f, ", x2);
+					writer.printf("%.2f, ", x2);
 					output += (Math.pow((1 - x1), 2) + (100 * Math.pow(x2 - Math.pow(x1, 2), 2)));	//Rosenbrock function
 					x1 += 0.01;
 					x2 += 0.01;
@@ -151,7 +151,8 @@ public class Main {
 
 		//if the user creates an MLP
 		if (input == 1) {
-			int hidLayer = 0, hidNode = 0, outputs = 0, actFun = 2;
+			int hidLayer = 0, hidNode = 0, outputs = 0, actFun = 0;
+			double learningRate = 0;
 			valid = true;
 
 			//grab number of hidden layers (with error checking)
@@ -197,8 +198,22 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
+			
+			do {
+				try {
+					System.out.println("Choose an activation function for the hidden layers:");
+					System.out.println("1. Linear");
+					System.out.println("2. Sigmoidal: Logistic");
+					actFun = in.nextInt();
+					valid = true;
+				}
+				catch (Exception e) {
+					System.out.println("That is not an integer. Please enter an integer.\n");
+					valid = false;
+					in.nextLine();
+				}
+			} while (valid == false);
 
-			double learningRate = 0;
 			//let the user choose an activation function from a list (with error checking)
 			do {
 				try {
@@ -231,6 +246,7 @@ public class Main {
 		//if the user chooses to create an RBF network
 		else if (input == 2) {
 			int gaussians = 0, outputs = 0;
+			double learningRate = 0;
 			valid = true;
 
 			//grab number of Gaussians (with error checking)
@@ -260,9 +276,28 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
+			
+			do {
+				try {
+					System.out.println("What do you want the learning rate to be? (0 - .05)");
+					learningRate = in.nextDouble();
+					if(learningRate > .05 || learningRate < 0)
+					{
+						valid = false;
+						System.out.println("That double is not between 0 and .05");
+					}
+					else
+						valid = true;
+				}
+				catch (Exception e) {
+					System.out.println("That is not an double. Please enter an integer.\n");
+					valid = false;
+					in.nextLine();
+				} 
+			} while (valid == false);
 
 			//create the RBF network with inputed parameters
-			network = new Network(numInputs, gaussians, outputs);
+			network = new Network(numInputs, gaussians, outputs, learningRate);
 
 		}
 		else {
