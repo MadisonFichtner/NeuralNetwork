@@ -2,6 +2,7 @@ package network;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 /* Notes: need to read in a data file
  * - need to add a connection from each node in 1 layer to every node in the next
  *
@@ -87,15 +88,15 @@ public class Main {
 					ins[j+1] = x2;
 					writer.printf("%.1f, ", x2);
 					output += (Math.pow((1 - x1), 2) + (100 * Math.pow(x2 - Math.pow(x1, 2), 2)));	//Rosenbrock function
-					x1 += 0.1;
-					x2 += 0.1;
+					x1 += 0.01;
+					x2 += 0.01;
 				}
 				samples.add(new Sample(ins, output));			//create new sample based on that array
 
 				//after each set of calculations (each output generated) print the results
 				writer.println(output);
 
-				firstNumber+=.1;
+				firstNumber+=.01;
 			}
 			writer.close();
 		}
@@ -150,7 +151,7 @@ public class Main {
 
 		//if the user creates an MLP
 		if (input == 1) {
-			int hidLayer = 0, hidNode = 0, outputs = 0, actFun = 0;
+			int hidLayer = 0, hidNode = 0, outputs = 0, actFun = 2;
 			valid = true;
 
 			//grab number of hidden layers (with error checking)
@@ -273,11 +274,15 @@ public class Main {
 		if(network.getType() == 2){
 			network.setCenters(samples);
 		}
+		
+		Collections.shuffle(samples);
 
 		//train network
-		network.train(samples.get(0).getInputs(), samples.get(0).getOutput());
-
-		//print network
-		network.printNetwork();
+		for(int i = 0; i < samples.size()/2; i++) {
+			network.train(samples.get(i).getInputs(), samples.get(i).getOutput());
+			network.printNetwork();
+			System.out.println("Desired Output: " + samples.get(i).getOutput() + "\n");
+		}
+		
 	}
 }
