@@ -47,7 +47,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-
+		
 			//enter data points (or inputs)
 			do {
 				valid = true;
@@ -61,44 +61,9 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-
-			File outfile = null;						//create output file
-			PrintWriter writer = null;
-			try {
-				outfile = new File("data.txt");
-				writer = new PrintWriter(outfile, "UTF-8");
-
-			} catch (Exception e) {
-				System.out.println("Something went wrong generating the output file.");
-			}
-
-			//for all the input values, set total = 0 and run through all the inputs
-			double firstNumber = 0;
-			for (int i = 0; i < numDataPoints; i++) {
-				double x1 = firstNumber;
-				double x2 = firstNumber+.01;
-				double[] ins = new double[numInputs];		//array of inputs
-				double output = 0;
-				ins[0] = x1;
-
-				writer.printf("%.2f, ", x1);
-
-				//loop through (depending on the dimension) and calculate function based on that -- this loop is essentially Sigma in the Rosenbrock function
-				for (int j = 0; j < numInputs-1; j++) {
-					ins[j+1] = x2;
-					writer.printf("%.2f, ", x2);
-					output += (Math.pow((1 - x1), 2) + (100 * Math.pow(x2 - Math.pow(x1, 2), 2)));	//Rosenbrock function
-					x1 += 0.01;
-					x2 += 0.01;
-				}
-				samples.add(new Sample(ins, output));			//create new sample based on that array
-
-				//after each set of calculations (each output generated) print the results
-				writer.println(output);
-
-				firstNumber+=.01;
-			}
-			writer.close();
+			
+			RosenbrockGenerator gen = new RosenbrockGenerator();
+			samples = gen.generate(numInputs, numDataPoints);
 		}
 		
 		//user chooses not to create data file - assumes one exists already
