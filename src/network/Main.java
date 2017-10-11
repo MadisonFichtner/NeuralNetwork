@@ -75,7 +75,7 @@ public class Main {
 					ArrayList<Double> inputs = new ArrayList<Double>();					//create an arraylist for the inputs
 					int counter = 0;													//counter to determine size of input array
 					Scanner lineScan = new Scanner(line);								//create new scanner that checks individual pieces of a line
-					lineScan.useDelimiter(", ");										//separates tokens with a comma, space (as they were inputted that way)
+					lineScan.useDelimiter(",");										//separates tokens with a comma, space (as they were inputted that way)
 					while (lineScan.hasNext()) {										//loop while there are still tokens to be read
 						counter++;														//update counter (1 more input)
 						inputs.add(Double.parseDouble(lineScan.next()));				//parse the token to be a double and add to the input arraylist
