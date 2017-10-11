@@ -204,9 +204,12 @@ public class Network {
 					for(int j = 0; j < inLayer.size(); j++)
 					{
 						//Update weights from inLayer to hidLayer(0)
+						double wkj = hidLayers.get(0).getNeuron(i).getWeightTo(0);	//weight from hidden neuron to output neuron
+						double oj = hidLayers.get(0).getNeuron(i).getOutput();	//output of hidden neuron
+						double oi = inLayer.getNeuron(j).getOutput();	//input to hidden neuron
 						double updatedWeight = inLayer.getNeuron(j).getWeightTo(i);		//Initializes value of updatedWeight to the original weight
-						delta = oldDelta * hidLayers.get(0).getNeuron(i).getWeightTo(0);
-						updatedWeight = updatedWeight + (learningRate * delta * inLayer.getNeuron(j).getOutput());
+						delta = oldDelta * wkj * oj * (1-oj);
+						updatedWeight = updatedWeight + (learningRate * delta * oi);
 						inLayer.getNeuron(j).setWeightTo(i, updatedWeight);
 					}
 				}
@@ -216,32 +219,32 @@ public class Network {
 
 			//2 hidden layer case
 			else if(hidLayers.size() == 2)
-			{
-				//Output layer update
-				//weight(old) + (learning rate * output error * output(neurons i) * output(neurons i+1) * (1-output(neurons i+1)
+			{	
+				double delta = 0;
 				for(int i = 0; i < outLayer.size(); i++)
-				{
-					for(int j = 0; j < hidLayers.get(1).size(); j++)
-					{
-						double updatedWeight = hidLayers.get(1).getNeuron(j).getWeightTo(i);	//Initializes value of updatedWeight to the original weight
-						updatedWeight = updatedWeight + (learningRate * (output - outLayer.getNeuron(i).getOutput()) * (outLayer.getNeuron(i).getOutput() * (1 - outLayer.getNeuron(i).getOutput())) * hidLayers.get(1).getNeuron(j).getOutput());
-						hidLayers.get(1).getNeuron(j).setWeightTo(i, updatedWeight);
-					}
-				}
-				//Update between hidden layers
-				for(int i = 0; i < hidLayers.get(1).size(); i++)
 				{
 					for(int j = 0; j < hidLayers.get(0).size(); j++)
 					{
-						//Update weights from hidLayer(0) to hidLayer(1)
+						double updatedWeight = hidLayers.get(0).getNeuron(j).getWeightTo(i);	//Initializes value of updatedWeight to the original weight
+						delta = (output - outLayer.getNeuron(i).getOutput());
+						updatedWeight = updatedWeight + (learningRate * delta * hidLayers.get(0).getNeuron(j).getOutput());
+						hidLayers.get(0).getNeuron(j).setWeightTo(i, updatedWeight);
 					}
 				}
-				//Update between input and hidLayer.get(0)
+				//Input layer update
+				double oldDelta = delta;
 				for(int i = 0; i < hidLayers.get(0).size(); i++)
 				{
 					for(int j = 0; j < inLayer.size(); j++)
 					{
 						//Update weights from inLayer to hidLayer(0)
+						double wkj = hidLayers.get(0).getNeuron(i).getWeightTo(0);	//weight from hidden neuron to output neuron
+						double oj = hidLayers.get(0).getNeuron(i).getOutput();	//output of hidden neuron
+						double oi = inLayer.getNeuron(j).getOutput();	//input to hidden neuron
+						double updatedWeight = inLayer.getNeuron(j).getWeightTo(i);		//Initializes value of updatedWeight to the original weight
+						delta = oldDelta * wkj * oj * (1-oj);
+						updatedWeight = updatedWeight + (learningRate * delta * oi);
+						inLayer.getNeuron(j).setWeightTo(i, updatedWeight);
 					}
 				}
 			}
@@ -260,6 +263,7 @@ public class Network {
 				}
 			}
 		}
+			
 	}
 
 
