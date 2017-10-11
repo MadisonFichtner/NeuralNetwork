@@ -47,7 +47,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-		
+
 			//enter data points (or inputs)
 			do {
 				valid = true;
@@ -61,11 +61,11 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			RosenbrockGenerator gen = new RosenbrockGenerator();
 			samples = gen.generate(numInputs, numDataPoints);
 		}
-		
+
 		//user chooses not to create data file - assumes one exists already
 		else {
 			try {
@@ -82,20 +82,20 @@ public class Main {
 					}
 					counter--;															//update counter to reflect input size (total - 1, since last token is output
 					double[] passIn = new double[counter];								//this is the array that will be passed to sample class
-					for (int i = 0; i < counter; i++) {									
+					for (int i = 0; i < counter; i++) {
 						passIn[i] = inputs.get(i);										//initialize the input array
 					}
 					samples.add(new Sample(passIn, inputs.get(counter)));				//create new sample with input array, output, and add that sample to the list of samples
 					lineScan.close();
 				}
 				s.close();
-			} 
+			}
 			catch (Exception e) {
 				System.out.println("File not found.");
 			}
 		}
 
-		
+
 		//this block prompts the user for what kind of network to create
 		input = 0;										//variable for user input for network
 		do {
@@ -163,7 +163,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			do {
 				try {
 					System.out.println("Choose an activation function for the hidden layers:");
@@ -196,7 +196,7 @@ public class Main {
 					System.out.println("That is not an double. Please enter an integer.\n");
 					valid = false;
 					in.nextLine();
-				} 
+				}
 			} while (valid == false);
 			//finally, create a MLP with all the information needed initially
 			network = new Network(numInputs, hidLayer, hidNode, outputs, actFun, learningRate);
@@ -241,7 +241,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			do {
 				try {
 					System.out.println("What do you want the learning rate to be? (0 - .05)");
@@ -258,7 +258,7 @@ public class Main {
 					System.out.println("That is not an double. Please enter an integer.\n");
 					valid = false;
 					in.nextLine();
-				} 
+				}
 			} while (valid == false);
 
 			//create the RBF network with inputed parameters
@@ -274,15 +274,31 @@ public class Main {
 		if(network.getType() == 2){
 			network.setCenters(samples);
 		}
-		
-		Collections.shuffle(samples);
 
-		//train network
-		for(int i = 0; i < samples.size()/2; i++) {
-			network.train(samples.get(i).getInputs(), samples.get(i).getOutput());
-			network.printNetwork();
-			System.out.println("Desired Output: " + samples.get(i).getOutput() + "\n");
+		//5x2 cross validation
+		double averageError = 0;	//error over all folds
+		for(int i = 0; i < 5; i++){
+			//System.out.println("TEST " + (i+1) + "\n");
+			Collections.shuffle(samples);
+
+			//train network
+			for(int j = 0; j < samples.size()/2; j++) {
+				network.train(samples.get(j).getInputs(), samples.get(j).getOutput());
+				//network.printNetwork();
+				//System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
+			}
+
+			double error = 0;	//error for this fold
+			for(int j = samples.size()/2; j < samples.size(); j++){
+				error += network.evaluate(samples.get(j).getInputs(), samples.get(j).getOutput());
+				//network.printNetwork();
+				//System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
+			}
+			error = error/(samples.size()/2);
+			System.out.println("Average Error of Test " + (i+1) + ": " + (error) + "\n");
+			averageError += error;
 		}
-		
+		averageError = averageError / 5;
+		System.out.println("Average Error of 5 Tests: " + averageError);
 	}
 }
