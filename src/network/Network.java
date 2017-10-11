@@ -11,6 +11,7 @@ public class Network {
 	private int type;	//what type of network it is
 	private double overallError;
 	private double learningRate;
+	private int numInputs, numHidLayers, numHidNodes, numOutputs;
 
 	/*
 	 * Create an MLP network
@@ -33,33 +34,33 @@ public class Network {
 		//create output layer with outputs number of nodes, node type of 0, and linear activation function
 		outLayer = new Layer(numOutputs, 0, 1);
 
-		//add connections from input layer to first hid layer with initial weights of 1
+		//add connections from input layer to first hid layer with random weights between -1 and 1
 		for(int i = 0; i < numInputs; i++){
 			for(int j = 0; j < numHidNodes; j++){
-				inLayer.getNeuron(i).addConnection(hidLayers.get(0).getNeuron(j), 1);
+				inLayer.getNeuron(i).addConnection(hidLayers.get(0).getNeuron(j), (random.nextDouble()*2)-1);
 			}
 		}
 
-		//add connections from each hidden layer to the next hidden layer with initial weights of 1
+		//add connections from each hidden layer to the next hidden layer with random weights between -1 and 1
 		for(int i = 0; i < numHidLayers-1; i ++){
 			for(int j = 0; j < numHidNodes; j++){
 				for(int k = 0; k < numHidNodes; k++){
-					hidLayers.get(i).getNeuron(j).addConnection(hidLayers.get(i+1).getNeuron(k), 1);
+					hidLayers.get(i).getNeuron(j).addConnection(hidLayers.get(i+1).getNeuron(k), (random.nextDouble()*2)-1);
 				}
 			}
 		}
 
-		//add connections from last hidden layer to output layer with initial weights of 1
+		//add connections from last hidden layer to output layer with random weights between -1 and 1
 		for(int i = 0; i < numHidNodes; i ++){
 			for(int j = 0; j < numOutputs; j++){
-				hidLayers.get(hidLayers.size()-1).getNeuron(i).addConnection(outLayer.getNeuron(j), 1);
+				hidLayers.get(hidLayers.size()-1).getNeuron(i).addConnection(outLayer.getNeuron(j), (random.nextDouble()*2)-1);
 			}
 		}
 
-		if(hidLayers.isEmpty()){	//if there are no hidden layers, connect input layer to output layer
+		if(hidLayers.isEmpty()){	//if there are no hidden layers, connect input layer to output layer with random weights between -1 and 1
 			for(int i = 0; i < numInputs; i ++){
 				for(int j = 0; j < numOutputs; j++){
-					inLayer.getNeuron(i).addConnection(outLayer.getNeuron(j), 1);
+					inLayer.getNeuron(i).addConnection(outLayer.getNeuron(j), (random.nextDouble()*2)-1);
 				}
 			}
 		}
@@ -68,6 +69,10 @@ public class Network {
 
 		//Learning Rate
 		this.learningRate = learningRate;
+		this.numInputs = numInputs;
+		this.numHidLayers = numHidLayers;
+		this.numHidNodes = numHidNodes;
+		this.numOutputs = numOutputs;
 	}
 
 	/*
@@ -87,22 +92,55 @@ public class Network {
 		//create output layer with outputs number of nodes, node type of 0, and linear activation function
 		outLayer = new Layer(numOutputs, 0, 1);
 
-		//add connections from input layer to Gaussian layer with weights of 1
+		//add connections from input layer to Gaussian layer with random weights between -1 and 1
 		for(int i = 0; i < numInputs; i++){
 			for(int j = 0; j < numGaussians; j++){
-				inLayer.getNeuron(i).addConnection(hidLayers.get(0).getNeuron(j), 1);
+				inLayer.getNeuron(i).addConnection(hidLayers.get(0).getNeuron(j), (random.nextDouble()*2)-1);
 			}
 		}
 
-		//add connections from Gaussian layer to output layer with initial weights of 1
+		//add connections from Gaussian layer to output layer with random weights between -1 and 1
 		for(int i = 0; i < numGaussians; i ++){
 			for(int j = 0; j < numOutputs; j++){
-				hidLayers.get(0).getNeuron(i).addConnection(outLayer.getNeuron(j), 1);
+				hidLayers.get(0).getNeuron(i).addConnection(outLayer.getNeuron(j), (random.nextDouble()*2)-1);
 			}
 		}
 
 		type = 2;
 		this.learningRate = learningRate;
+	}
+
+	public void reset(){
+		//add connections from input layer to first hid layer with random weights between -1 and 1
+		for(int i = 0; i < numInputs; i++){
+			for(int j = 0; j < numHidNodes; j++){
+				inLayer.getNeuron(i).addConnection(hidLayers.get(0).getNeuron(j), (random.nextDouble()*2)-1);
+			}
+		}
+
+		//add connections from each hidden layer to the next hidden layer with random weights between -1 and 1
+		for(int i = 0; i < numHidLayers-1; i ++){
+			for(int j = 0; j < numHidNodes; j++){
+				for(int k = 0; k < numHidNodes; k++){
+					hidLayers.get(i).getNeuron(j).addConnection(hidLayers.get(i+1).getNeuron(k), (random.nextDouble()*2)-1);
+				}
+			}
+		}
+
+		//add connections from last hidden layer to output layer with random weights between -1 and 1
+		for(int i = 0; i < numHidNodes; i ++){
+			for(int j = 0; j < numOutputs; j++){
+				hidLayers.get(hidLayers.size()-1).getNeuron(i).addConnection(outLayer.getNeuron(j), (random.nextDouble()*2)-1);
+			}
+		}
+
+		if(hidLayers.isEmpty()){	//if there are no hidden layers, connect input layer to output layer with random weights between -1 and 1
+			for(int i = 0; i < numInputs; i ++){
+				for(int j = 0; j < numOutputs; j++){
+					inLayer.getNeuron(i).addConnection(outLayer.getNeuron(j), (random.nextDouble()*2)-1);
+				}
+			}
+		}
 	}
 
 	// 1. Calculate net input for h1 = w1*i1 + ... wn*in + b1 * 1 (where b is bias node)

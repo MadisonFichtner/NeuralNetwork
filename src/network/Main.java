@@ -279,6 +279,7 @@ public class Main {
 		double averageError = 0;	//error over all folds
 		for(int i = 0; i < 5; i++){
 			//System.out.println("TEST " + (i+1) + "\n");
+			network.reset();
 			Collections.shuffle(samples);
 
 			//train network
