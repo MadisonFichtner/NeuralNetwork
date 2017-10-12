@@ -54,18 +54,17 @@ public class Neuron {
 			for(int i = 0; i < ins.size(); i++){
 				squaredDistance += Math.pow(ins.get(i)-center[i], 2);
 			}
-			double distance = Math.sqrt(squaredDistance); 
+			double distance = Math.sqrt(squaredDistance);
 
 			output = Math.exp(-Math.pow(distance, 2)/(2*Math.pow(sigma, 2)));	//radial basis function
 		}
 	}
-	
+
 	public void setCenter(double[] center){
-		System.out.println(center[0]);
 		this.center = new double[center.length];
 		this.center = center;
 	}
-	
+
 	public double getWeightTo(int index){
 		return connections.get(index).getWeight();
 	}
@@ -73,7 +72,7 @@ public class Neuron {
 	public void setWeightTo(int index, double weight) {
 		connections.get(index).setWeight(weight);
 	}
-	
+
 	//prints out info about neuron
 	public void printNeuron(int num){
 		System.out.println("\tNode " + num + ":");
@@ -100,7 +99,7 @@ public class Neuron {
 	public int getActFun(){
 		return actFun;
 	}
-	
+
 	public ArrayList getConnections() {
 		return connections;
 	}

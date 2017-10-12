@@ -67,10 +67,10 @@ public class RosenbrockGenerator {
 			writer.println(output);
 			samples.add(new Sample(inputs, output));
 		}
-		
+
 		System.out.println("Range of Data: " + (maxOutput-minOutput));
 		writer.close();
-		
+
 		return samples;
 	}
 
@@ -80,5 +80,6 @@ public class RosenbrockGenerator {
 			output += (Math.pow((1 - inputs[i]), 2) + (100 * Math.pow(inputs[i+1] - Math.pow(inputs[i], 2), 2)));	//Rosenbrock function
 		}
 		return output;
+		//return Math.sin(inputs[0]);
 	}
 }

@@ -68,6 +68,7 @@ public class Main {
 
 		//user chooses not to create data file - assumes one exists already
 		else {
+			numDataPoints = 0;
 			try {
 				Scanner s = new Scanner(new File("data.txt"));							//create a new scanner, checks lines of data in file
 				while (s.hasNextLine()) {												//loop while there is another line
@@ -78,17 +79,22 @@ public class Main {
 					lineScan.useDelimiter(",");										//separates tokens with a comma, space (as they were inputted that way)
 					while (lineScan.hasNext()) {										//loop while there are still tokens to be read
 						counter++;														//update counter (1 more input)
-						inputs.add(Double.parseDouble(lineScan.next()));				//parse the token to be a double and add to the input arraylist
-					}
-					counter--;															//update counter to reflect input size (total - 1, since last token is output
+						double element = Double.parseDouble(lineScan.next());
+						inputs.add(element);				//parse the token to be a double and add to the input arraylist
+					}														//update counter to reflect input size (total - 1, since last token is output
+					counter--;
 					double[] passIn = new double[counter];								//this is the array that will be passed to sample class
 					for (int i = 0; i < counter; i++) {
 						passIn[i] = inputs.get(i);										//initialize the input array
 					}
 					samples.add(new Sample(passIn, inputs.get(counter)));				//create new sample with input array, output, and add that sample to the list of samples
+					numInputs = passIn.length;
+					numDataPoints ++;
 					lineScan.close();
 				}
 				s.close();
+				System.out.println("Number of Inputs: " + numInputs);
+				System.out.println("Number of Data Points: " + numDataPoints);
 			}
 			catch (Exception e) {
 				System.out.println("File not found.");
@@ -292,8 +298,11 @@ public class Main {
 			double error = 0;	//error for this fold
 			for(int j = samples.size()/2; j < samples.size(); j++){
 				error += network.evaluate(samples.get(j).getInputs(), samples.get(j).getOutput());
-				//network.printNetwork();
-				//System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
+
+				if(j > samples.size() - 5){	//print last 5 tests
+					network.printNetwork();
+					System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
+				}
 			}
 			error = error/(samples.size()/2);
 			System.out.println("Average Error of Test " + (i+1) + ": " + (error) + "\n");
