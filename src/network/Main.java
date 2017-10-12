@@ -62,47 +62,13 @@ public class Main {
 				}
 			} while (valid == false);
 
-			File outfile = null;						//create output file
-			PrintWriter writer = null;
-			try {
-				outfile = new File("data.txt");
-				writer = new PrintWriter(outfile, "UTF-8");
-
-			} catch (Exception e) {
-				System.out.println("Something went wrong generating the output file.");
-			}
-
-			//for all the input values, set total = 0 and run through all the inputs
-			double firstNumber = 0;
-			for (int i = 0; i < numDataPoints; i++) {
-				double x1 = firstNumber;
-				double x2 = firstNumber+.01;
-				double[] ins = new double[numInputs];		//array of inputs
-				double output = 0;
-				ins[0] = x1;
-
-				writer.printf("%.2f, ", x1);
-
-				//loop through (depending on the dimension) and calculate function based on that -- this loop is essentially Sigma in the Rosenbrock function
-				for (int j = 0; j < numInputs-1; j++) {
-					ins[j+1] = x2;
-					writer.printf("%.2f, ", x2);
-					output += (Math.pow((1 - x1), 2) + (100 * Math.pow(x2 - Math.pow(x1, 2), 2)));	//Rosenbrock function
-					x1 += 0.01;
-					x2 += 0.01;
-				}
-				samples.add(new Sample(ins, output));			//create new sample based on that array
-
-				//after each set of calculations (each output generated) print the results
-				writer.println(output);
-
-				firstNumber+=.01;
-			}
-			writer.close();
+			RosenbrockGenerator gen = new RosenbrockGenerator();
+			samples = gen.generate(numInputs, numDataPoints);
 		}
-		
+
 		//user chooses not to create data file - assumes one exists already
 		else {
+			numDataPoints = 0;
 			try {
 				Scanner s = new Scanner(new File("data.txt"));							//create a new scanner, checks lines of data in file
 				while (s.hasNextLine()) {												//loop while there is another line
@@ -110,27 +76,32 @@ public class Main {
 					ArrayList<Double> inputs = new ArrayList<Double>();					//create an arraylist for the inputs
 					int counter = 0;													//counter to determine size of input array
 					Scanner lineScan = new Scanner(line);								//create new scanner that checks individual pieces of a line
-					lineScan.useDelimiter(", ");										//separates tokens with a comma, space (as they were inputted that way)
+					lineScan.useDelimiter(",");										//separates tokens with a comma, space (as they were inputted that way)
 					while (lineScan.hasNext()) {										//loop while there are still tokens to be read
 						counter++;														//update counter (1 more input)
-						inputs.add(Double.parseDouble(lineScan.next()));				//parse the token to be a double and add to the input arraylist
-					}
-					counter--;															//update counter to reflect input size (total - 1, since last token is output
+						double element = Double.parseDouble(lineScan.next());
+						inputs.add(element);				//parse the token to be a double and add to the input arraylist
+					}														//update counter to reflect input size (total - 1, since last token is output
+					counter--;
 					double[] passIn = new double[counter];								//this is the array that will be passed to sample class
-					for (int i = 0; i < counter; i++) {									
+					for (int i = 0; i < counter; i++) {
 						passIn[i] = inputs.get(i);										//initialize the input array
 					}
 					samples.add(new Sample(passIn, inputs.get(counter)));				//create new sample with input array, output, and add that sample to the list of samples
+					numInputs = passIn.length;
+					numDataPoints ++;
 					lineScan.close();
 				}
 				s.close();
-			} 
+				System.out.println("Number of Inputs: " + numInputs);
+				System.out.println("Number of Data Points: " + numDataPoints);
+			}
 			catch (Exception e) {
 				System.out.println("File not found.");
 			}
 		}
 
-		
+
 		//this block prompts the user for what kind of network to create
 		input = 0;										//variable for user input for network
 		do {
@@ -198,7 +169,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			do {
 				try {
 					System.out.println("Choose an activation function for the hidden layers:");
@@ -231,7 +202,7 @@ public class Main {
 					System.out.println("That is not an double. Please enter an integer.\n");
 					valid = false;
 					in.nextLine();
-				} 
+				}
 			} while (valid == false);
 			//finally, create a MLP with all the information needed initially
 			network = new Network(numInputs, hidLayer, hidNode, outputs, actFun, learningRate);
@@ -276,7 +247,7 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
-			
+
 			do {
 				try {
 					System.out.println("What do you want the learning rate to be? (0 - .05)");
@@ -293,7 +264,7 @@ public class Main {
 					System.out.println("That is not an double. Please enter an integer.\n");
 					valid = false;
 					in.nextLine();
-				} 
+				}
 			} while (valid == false);
 
 			//create the RBF network with inputed parameters
@@ -309,15 +280,35 @@ public class Main {
 		if(network.getType() == 2){
 			network.setCenters(samples);
 		}
-		
-		Collections.shuffle(samples);
 
-		//train network
-		for(int i = 0; i < samples.size()/2; i++) {
-			network.train(samples.get(i).getInputs(), samples.get(i).getOutput());
-			network.printNetwork();
-			System.out.println("Desired Output: " + samples.get(i).getOutput() + "\n");
+		//5x2 cross validation
+		double averageError = 0;	//error over all folds
+		for(int i = 0; i < 5; i++){
+			//System.out.println("TEST " + (i+1) + "\n");
+			network.reset();
+			Collections.shuffle(samples);
+
+			//train network
+			for(int j = 0; j < samples.size()/2; j++) {
+				network.train(samples.get(j).getInputs(), samples.get(j).getOutput());
+				//network.printNetwork();
+				//System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
+			}
+
+			double error = 0;	//error for this fold
+			for(int j = samples.size()/2; j < samples.size(); j++){
+				error += network.evaluate(samples.get(j).getInputs(), samples.get(j).getOutput());
+
+				if(j > samples.size() - 5){	//print last 5 tests
+					network.printNetwork();
+					System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
+				}
+			}
+			error = error/(samples.size()/2);
+			System.out.println("Average Error of Test " + (i+1) + ": " + (error) + "\n");
+			averageError += error;
 		}
-		
+		averageError = averageError / 5;
+		System.out.println("Average Error of 5 Tests: " + averageError);
 	}
 }
