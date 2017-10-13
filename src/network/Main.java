@@ -3,10 +3,6 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-/* Notes: need to read in a data file
- * - need to add a connection from each node in 1 layer to every node in the next
- *
- */
 import java.util.Scanner;
 
 public class Main {

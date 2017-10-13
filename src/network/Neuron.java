@@ -19,6 +19,7 @@ public class Neuron {
 		connections = new ArrayList<Connection>();
 	}
 
+	//the function to calculate the output of the activation function of the neuron
 	public void activate() {
 		switch (actFun) {
 		case 1:
@@ -29,6 +30,7 @@ public class Neuron {
 		}
 	}
 
+	//adds a connection to the previous layer neuron and the weight of the connection
 	public void addConnection(Neuron n, double weight){
 		connections.add(new Connection(this, n, weight));
 	}
@@ -60,16 +62,19 @@ public class Neuron {
 		}
 	}
 	
+	//sets this neuron to be a center of a cluster
 	public void setCenter(double[] center){
 		System.out.println(center[0]);
 		this.center = new double[center.length];
 		this.center = center;
 	}
 	
+	//returns the weight of the connection this neuron has
 	public double getWeightTo(int index){
 		return connections.get(index).getWeight();
 	}
 
+	//sets the weight of the connection this neuron is the end of
 	public void setWeightTo(int index, double weight) {
 		connections.get(index).setWeight(weight);
 	}
@@ -85,23 +90,28 @@ public class Neuron {
 		System.out.println("\t  Output: " + output);
 	}
 
+	//returns the neuron's output
 	public double getOutput(){
 		return output;
 	}
 
+	//set's the neuron's output (if special layer)
 	public void setOutput(double value){
 		output = value;
 	}
 
+	//returns the type of the neuron
 	public int getType(){
 		return type;
 	}
 
+	//returns the neuron's activation function
 	public int getActFun(){
 		return actFun;
 	}
 	
-	public ArrayList getConnections() {
+	//returns this neuron's connection list
+	public ArrayList<Connection> getConnections() {
 		return connections;
 	}
 }

@@ -22,6 +22,7 @@ public class Sample {
 		return inputs[index];
 	}
 
+	//returns all the input values in the sample
 	public double[] getInputs(){
 		return inputs;
 	}

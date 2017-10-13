@@ -2,6 +2,10 @@ package network;
 
 import java.util.ArrayList;
 
+/* Represents a single layer in the network and it's functions. Contains
+ * a list of neurons/nodes, the number of those, the type of node (weighted sum or Gaussian),
+ * and the activation function for that layer, which is passed on to neurons for the layer.
+ */
 public class Layer {
 	private ArrayList<Neuron> neurons;
 	private int numNodes;
@@ -26,14 +30,17 @@ public class Layer {
 		}
 	}
 
+	//adds a neuron to the layer
 	public void addNeuron(Neuron n) {
 		neurons.add(n);
 	}
 
+	//returns the neuron at the provided index
 	public Neuron getNeuron(int index){
 		return neurons.get(index);
 	}
 
+	//returns the size of the neuron array; effectively the layer size in neurons
 	public int size(){
 		return neurons.size();
 	}
