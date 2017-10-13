@@ -285,23 +285,28 @@ public class Main {
 			Collections.shuffle(samples);
 
 			//train network
-			for(int j = 0; j < samples.size()/2; j++) {
-				network.train(samples.get(j).getInputs(), samples.get(j).getOutput());
-				//network.printNetwork();
-				//System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
+			for(int j = 0; j < 20; j++){
+				double error = 0;
+				for(int k = j*(samples.size()/40); k < (j+1)*(samples.size()/40); k++) {
+					error += network.train(samples.get(k).getInputs(), samples.get(k).getOutput());
+					//network.printNetwork();
+					//System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
+					//error = error/(samples.size()/200);
+				}
+				System.out.println("\tAverage Error: " + (error/(samples.size()/40)));
 			}
 
 			double error = 0;	//error for this fold
 			for(int j = samples.size()/2; j < samples.size(); j++){
 				error += network.evaluate(samples.get(j).getInputs(), samples.get(j).getOutput());
 
-				if(j > samples.size() - 5){	//print last 5 tests
+				/*if(j > samples.size() - 5){	//print last 5 tests
 					network.printNetwork();
 					System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
-				}
+				}*/
 			}
 			error = error/(samples.size()/2);
-			System.out.println("Average Error of Test " + (i+1) + ": " + (error) + "\n");
+			System.out.println("Average Error of Test " + (1) + ": " + (error) + "\n");
 			averageError += error;
 		}
 		averageError = averageError / 5;

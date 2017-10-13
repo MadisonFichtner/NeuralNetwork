@@ -56,7 +56,7 @@ public class RosenbrockGenerator {
 		for(int i = 0; i < numDataPoints; i++){
 			double inputs[] = new double[numInputs];
 			for(int j = 0; j < numInputs; j++){
-				inputs[j] = (random.nextDouble()*10)-5;
+				inputs[j] = (random.nextDouble()*6)-3;
 				writer.print(inputs[j] + ",");
 			}
 			double output = calculate(inputs);

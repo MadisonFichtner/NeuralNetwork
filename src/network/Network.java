@@ -339,7 +339,7 @@ public class Network {
 	 * @param inputs: an array which stores the input values of a Rosenbrock function
 	 * @param output: stores the output value from the Rosenbrock function with given x values
 	 */
-	public void train(double inputs[], double output){
+	public double train(double inputs[], double output){
 		// 1. It should run the inputs through the network and get an output
 		// 2. Then call calcError() with the output and the desired output to calculate error
 		// 3. Then call backprop() with the value of the error
@@ -354,8 +354,9 @@ public class Network {
 
 		//calculate error and back propagate
 		double actualOutput = outLayer.getNeuron(0).getOutput();
-		double error = calcError(actualOutput, output);
+		double error = Math.abs(actualOutput - output);
 		backprop(error, output);
+		return error;
 	}
 
 	public double evaluate(double inputs[], double output){

@@ -61,22 +61,14 @@ public class Neuron {
 			output = Math.exp(-Math.pow(distance, 2)/(2*Math.pow(sigma, 2)));	//radial basis function
 		}
 	}
-<<<<<<< HEAD
-	
-	//sets this neuron to be a center of a cluster
-=======
 
->>>>>>> d1a89e7cdb6f059b890f4de04dd685b120161f13
+	//sets this neuron to be a center of a cluster
 	public void setCenter(double[] center){
 		this.center = new double[center.length];
 		this.center = center;
 	}
-<<<<<<< HEAD
-	
-	//returns the weight of the connection this neuron has
-=======
 
->>>>>>> d1a89e7cdb6f059b890f4de04dd685b120161f13
+	//returns the weight of the connection this neuron has
 	public double getWeightTo(int index){
 		return connections.get(index).getWeight();
 	}
@@ -116,14 +108,9 @@ public class Neuron {
 	public int getActFun(){
 		return actFun;
 	}
-<<<<<<< HEAD
-	
+
 	//returns this neuron's connection list
 	public ArrayList<Connection> getConnections() {
-=======
-
-	public ArrayList getConnections() {
->>>>>>> d1a89e7cdb6f059b890f4de04dd685b120161f13
 		return connections;
 	}
 }
