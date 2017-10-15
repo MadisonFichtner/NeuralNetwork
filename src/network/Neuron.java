@@ -2,6 +2,10 @@ package network;
 
 import java.util.ArrayList;
 
+/*	Represents a single neuron in the neural network. Tracks the 
+ *  activation function of the neuron, the type of neuron, the connections to it,
+ *  the output, and the center of its assigned cluster (which is more for later)
+ */
 public class Neuron {
 	private int actFun;
 	private int type;	//type of neuron
@@ -9,7 +13,7 @@ public class Neuron {
 	private double output;
 	private double[] center; //center of cluster
 
-	/*
+	/* Create a new instance of Neuron
 	 * @param actFun: activation function to be used
 	 * @param type: type of neuron - 0 for weighted sum, 1 for Gaussian
 	 */
@@ -22,7 +26,7 @@ public class Neuron {
 	//the function to calculate the output of the activation function of the neuron
 	public void activate() {
 		switch (actFun) {
-		case 1:
+		case 1:						//represents the case for linear activation function - for output layer
 			break;
 		case 2:						//sigmoidal - logistic
 			output = 1/(1+Math.exp(-output));

@@ -1,11 +1,11 @@
 package network;
 import java.io.File;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
 public class Main {
+
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);																	//create scanner for input
 		boolean valid = true;																					//flag variable for correct user input
@@ -119,6 +119,7 @@ public class Main {
 		//if the user creates an MLP
 		if (input == 1) {
 			int hidLayer = 0, hidNode = 0, outputs = 0, actFun = 0;
+			ArrayList<Integer> hidN = new ArrayList<Integer>();		//tracks hidden nodes per layer
 			double learningRate = 0;
 			valid = true;
 
@@ -138,18 +139,21 @@ public class Main {
 
 			//grab number of hidden nodes if there are hidden layers (with error checking)
 			if (hidLayer != 0) {
-				do {
-					try {
-						System.out.println("How many hidden nodes will there be?");
-						hidNode = in.nextInt();
-						valid = true;
-					}
-					catch (Exception e) {
-						System.out.println("That is not an integer. Please enter an integer.\n");
-						valid = false;
-						in.nextLine();
-					}
-				} while (valid == false);
+				for (int i = 0; i < hidLayer; i++) {				//loop through and ask how many hidden nodes for each layer (only really happens for 2 layers+)
+					do {
+						try {
+							System.out.println("How many hidden nodes will there be?");
+							hidNode = in.nextInt();
+							hidN.add(hidNode);
+							valid = true;
+						}
+						catch (Exception e) {
+							System.out.println("That is not an integer. Please enter an integer.\n");
+							valid = false;
+							in.nextLine();
+						}
+					} while (valid == false);
+				}
 			}
 
 			//grab number of output nodes (with error checking)
@@ -200,15 +204,13 @@ public class Main {
 					in.nextLine();
 				}
 			} while (valid == false);
+			
 			//finally, create a MLP with all the information needed initially
-			network = new Network(numInputs, hidLayer, hidNode, outputs, actFun, learningRate);
+			if (hidLayer > 1) {
+				
+			}
+			else network = new Network(numInputs, hidLayer, hidN, outputs, actFun, learningRate);
 		}
-
-
-		//STILL NEEDS TRAINING FUNCTIONS AND CORRESPONDING MENU FOR RBF
-		/*	from video: e^(-Beta * ||x - c||^2)
-		 *
-		 */
 
 		//if the user chooses to create an RBF network
 		else if (input == 2) {
@@ -280,7 +282,6 @@ public class Main {
 		//5x2 cross validation
 		double averageError = 0;	//error over all folds
 		for(int i = 0; i < 5; i++){
-			//System.out.println("TEST " + (i+1) + "\n");
 			network.reset();
 			Collections.shuffle(samples);
 
@@ -289,9 +290,6 @@ public class Main {
 				double error = 0;
 				for(int k = j*(samples.size()/40); k < (j+1)*(samples.size()/40); k++) {
 					error += network.train(samples.get(k).getInputs(), samples.get(k).getOutput());
-					//network.printNetwork();
-					//System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
-					//error = error/(samples.size()/200);
 				}
 				System.out.println("\tAverage Error: " + (error/(samples.size()/40)));
 			}
@@ -299,11 +297,6 @@ public class Main {
 			double error = 0;	//error for this fold
 			for(int j = samples.size()/2; j < samples.size(); j++){
 				error += network.evaluate(samples.get(j).getInputs(), samples.get(j).getOutput());
-
-				/*if(j > samples.size() - 5){	//print last 5 tests
-					network.printNetwork();
-					System.out.println("Desired Output: " + samples.get(j).getOutput() + "\n");
-				}*/
 			}
 			error = error/(samples.size()/2);
 			System.out.println("Average Error of Test " + (1) + ": " + (error) + "\n");

@@ -3,6 +3,10 @@ package network;
 import java.util.ArrayList;
 import java.util.Random;
 
+/*	Represents a network - this is where the training happens and essentially
+ *  everything network related besides getting user input. Instances of this class
+ *  are controlled from main. This class tracks all traits of a network, MLP or RBF
+ */
 public class Network {
 	private Random random = new Random();
 	private Layer inLayer;
@@ -11,7 +15,8 @@ public class Network {
 	private int type;	//what type of network it is
 	private double overallError;
 	private double learningRate;
-	private int numInputs, numHidLayers, numHidNodes, numOutputs;
+	private int numInputs, numHidLayers, numOutputs;
+	ArrayList<Integer> numHidNodes = null;
 
 	/*
 	 * Create an MLP network
@@ -21,14 +26,14 @@ public class Network {
 	 * @param numOutputs: number of output nodes
 	 * @param actFun: type of activation function for nodes
 	 */
-	public Network(int numInputs, int numHidLayers, int numHidNodes, int numOutputs, int actFun, double learningRate) {
+	public Network(int numInputs, int numHidLayers, ArrayList<Integer> numHidNodes, int numOutputs, int actFun, double learningRate) {
 		//create input layer with inputs number of nodes, node type of 0, and a linear activation function
 		inLayer = new Layer(numInputs, 0, 1);
 
 		//create hidden layers with hidNode number of nodes, node type of 0, and given activation function
 		hidLayers = new ArrayList<Layer>();
 		for(int i = 0; i < numHidLayers; i++){
-			hidLayers.add(new Layer(numHidNodes, 0, actFun));
+			hidLayers.add(new Layer(numHidNodes.get(i), 0, actFun));
 		}
 
 		//create output layer with outputs number of nodes, node type of 0, and linear activation function
@@ -36,22 +41,22 @@ public class Network {
 
 		//add connections from input layer to first hid layer with random weights between -1 and 1
 		for(int i = 0; i < numInputs; i++){
-			for(int j = 0; j < numHidNodes; j++){
+			for(int j = 0; j < numHidNodes.get(i); j++){
 				inLayer.getNeuron(i).addConnection(hidLayers.get(0).getNeuron(j), (random.nextDouble()*2)-1);
 			}
 		}
 
 		//add connections from each hidden layer to the next hidden layer with random weights between -1 and 1
 		for(int i = 0; i < numHidLayers-1; i ++){
-			for(int j = 0; j < numHidNodes; j++){
-				for(int k = 0; k < numHidNodes; k++){
+			for(int j = 0; j < numHidNodes.get(i); j++){
+				for(int k = 0; k < numHidNodes.get(i); k++){
 					hidLayers.get(i).getNeuron(j).addConnection(hidLayers.get(i+1).getNeuron(k), (random.nextDouble()*2)-1);
 				}
 			}
 		}
 
 		//add connections from last hidden layer to output layer with random weights between -1 and 1
-		for(int i = 0; i < numHidNodes; i ++){
+		for(int i = 0; i < numHidNodes.get(numHidNodes.size()); i ++){
 			for(int j = 0; j < numOutputs; j++){
 				hidLayers.get(hidLayers.size()-1).getNeuron(i).addConnection(outLayer.getNeuron(j), (random.nextDouble()*2)-1);
 			}
@@ -110,29 +115,29 @@ public class Network {
 		this.learningRate = learningRate;
 		this.numInputs = numInputs;
 		this.numHidLayers = 1;
-		this.numHidNodes = numGaussians;
+		this.numHidNodes.add(numGaussians);
 		this.numOutputs = numOutputs;
 	}
 
 	public void reset(){
 		//add connections from input layer to first hid layer with random weights between -1 and 1
 		for(int i = 0; i < numInputs; i++){
-			for(int j = 0; j < numHidNodes; j++){
+			for(int j = 0; j < numHidNodes.get(i); j++){
 				inLayer.getNeuron(i).setWeightTo(j, (random.nextDouble()*2)-1);
 			}
 		}
 
 		//add connections from each hidden layer to the next hidden layer with random weights between -1 and 1
 		for(int i = 0; i < numHidLayers-1; i ++){
-			for(int j = 0; j < numHidNodes; j++){
-				for(int k = 0; k < numHidNodes; k++){
+			for(int j = 0; j < numHidNodes.get(i); j++){
+				for(int k = 0; k < numHidNodes.get(i); k++){
 					hidLayers.get(i).getNeuron(j).setWeightTo(k, (random.nextDouble()*2)-1);
 				}
 			}
 		}
 
 		//add connections from last hidden layer to output layer with random weights between -1 and 1
-		for(int i = 0; i < numHidNodes; i ++){
+		for(int i = 0; i < numHidNodes.get(i); i ++){
 			for(int j = 0; j < numOutputs; j++){
 				hidLayers.get(hidLayers.size()-1).getNeuron(i).setWeightTo(j, (random.nextDouble()*2)-1);
 			}
@@ -216,10 +221,9 @@ public class Network {
 						updatedWeight += (learningRate * delta * oi);
 						inLayer.getNeuron(j).setWeightTo(i, updatedWeight);
 					}
+					delta = delta * hidLayers.get(0).getNeuron(i).getWeightTo(0) * hidLayers.get(0).getNeuron(i).getOutput() * (1-hidLayers.get(0).getNeuron(i).getOutput());
 				}
 			}
-
-			//delta = delta * hidLayers.get(0).getNeuron(i).getWeightTo(0) * hidLayers.get(0).getNeuron(i).getOutput() * (1-hidLayers.get(0).getNeuron(i).getOutput());
 
 			//2 hidden layer case
 			else if(hidLayers.size() == 2)
@@ -294,45 +298,45 @@ public class Network {
 
 	public void calcOutputs() {
 		//calculate hidden layers outputs
-				for(int i = 0; i < hidLayers.size(); i++){					//iterate through each hidden layer
-					for(int j = 0; j < hidLayers.get(i).size(); j++){		//iterate through each neuron in the hidden layer
-						ArrayList<Double> ins = new ArrayList<Double>();	//inputs to the neuron
-						ArrayList<Double> weights = new ArrayList<Double>();//corresponding weights to the neuron
-						if(i == 0){											//if it is the first hidden layer we want to get inputs from input layer
-							for(int k = 0; k < inLayer.size(); k++){		//iterate through each neuron in input layer
-								ins.add(inLayer.getNeuron(k).getOutput());
-								weights.add(inLayer.getNeuron(k).getWeightTo(j));
-							}
-						}
-						else{																	//otherwise we want input from previous hidden layer
-							for(int k = 0; k < hidLayers.get(i-1).size(); k++){					//iterate through each neuron in previous hidden layer
-								ins.add(hidLayers.get(i-1).getNeuron(k).getOutput());
-								weights.add(hidLayers.get(i-1).getNeuron(k).getWeightTo(j));
-							}
-						}
-						hidLayers.get(i).getNeuron(j).calculate(ins, weights); //calculate output of each neuron in hidden layer
+		for(int i = 0; i < hidLayers.size(); i++){					//iterate through each hidden layer
+			for(int j = 0; j < hidLayers.get(i).size(); j++){		//iterate through each neuron in the hidden layer
+				ArrayList<Double> ins = new ArrayList<Double>();	//inputs to the neuron
+				ArrayList<Double> weights = new ArrayList<Double>();//corresponding weights to the neuron
+				if(i == 0){											//if it is the first hidden layer we want to get inputs from input layer
+					for(int k = 0; k < inLayer.size(); k++){		//iterate through each neuron in input layer
+						ins.add(inLayer.getNeuron(k).getOutput());
+						weights.add(inLayer.getNeuron(k).getWeightTo(j));
 					}
 				}
+				else{																	//otherwise we want input from previous hidden layer
+					for(int k = 0; k < hidLayers.get(i-1).size(); k++){					//iterate through each neuron in previous hidden layer
+						ins.add(hidLayers.get(i-1).getNeuron(k).getOutput());
+						weights.add(hidLayers.get(i-1).getNeuron(k).getWeightTo(j));
+					}
+				}
+				hidLayers.get(i).getNeuron(j).calculate(ins, weights); //calculate output of each neuron in hidden layer
+			}
+		}
 
-				//calculate output layer outputs
-				for(int i = 0; i < outLayer.size(); i++){								//iterate through each neuron in output layer
-					ArrayList<Double> ins = new ArrayList<Double>();					//inputs to the neuron
-					ArrayList<Double> weights = new ArrayList<Double>();				//corresponding weights to the neuron
-					if(!hidLayers.isEmpty()){											//if there are no hidden layers
-						for(int j = 0; j < hidLayers.get(hidLayers.size()-1).size(); j++){	//iterate through each neuron in last hidden layer
-							ins.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getOutput());
-							weights.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getWeightTo(i));
-							outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
-						}
-					}
-					else{	//calculate output from input layer if there are no hidden layers
-						for(int j = 0; j < inLayer.size(); j++){	//iterate through each neuron in last hidden layer
-							ins.add(inLayer.getNeuron(j).getOutput());
-							weights.add(inLayer.getNeuron(j).getWeightTo(i));
-							outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
-						}
-					}
+		//calculate output layer outputs
+		for(int i = 0; i < outLayer.size(); i++){								//iterate through each neuron in output layer
+			ArrayList<Double> ins = new ArrayList<Double>();					//inputs to the neuron
+			ArrayList<Double> weights = new ArrayList<Double>();				//corresponding weights to the neuron
+			if(!hidLayers.isEmpty()){											//if there are no hidden layers
+				for(int j = 0; j < hidLayers.get(hidLayers.size()-1).size(); j++){	//iterate through each neuron in last hidden layer
+					ins.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getOutput());
+					weights.add(hidLayers.get(hidLayers.size()-1).getNeuron(j).getWeightTo(i));
+					outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
 				}
+			}
+			else{	//calculate output from input layer if there are no hidden layers
+				for(int j = 0; j < inLayer.size(); j++){	//iterate through each neuron in last hidden layer
+					ins.add(inLayer.getNeuron(j).getOutput());
+					weights.add(inLayer.getNeuron(j).getWeightTo(i));
+					outLayer.getNeuron(i).calculate(ins, weights);					//calculate output of each output node
+				}
+			}
+		}
 	}
 	/*
 	 * Trains the neural network
@@ -359,6 +363,7 @@ public class Network {
 		return error;
 	}
 
+	//evaluates the error of the network
 	public double evaluate(double inputs[], double output){
 		for(int i = 0; i < inLayer.size(); i++){
 			inLayer.getNeuron(i).setOutput(inputs[i]);
@@ -370,6 +375,7 @@ public class Network {
 		return Math.abs(actualOutput - output);	//return absolute error
 	}
 
+	//set the centers of data for clustering
 	public void setCenters(ArrayList<Sample> samples){
 		for(int i = 0; i < hidLayers.get(0).size(); i++){
 			int center = random.nextInt(samples.size());
@@ -377,6 +383,7 @@ public class Network {
 		}
 	}
 
+	//return the type of network (MLP or RBF)
 	public int getType(){
 		return type;
 	}

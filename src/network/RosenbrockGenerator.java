@@ -5,7 +5,16 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
+/* This class generates data for the Rosenbrock function and writes it
+ * to a file. The user can choose to read in the data from that file or 
+ * create a new dataset using this class.
+ */
 public class RosenbrockGenerator {
+	
+	/*	Create a new instance of the RosenbrockGenerator
+	 * 	@param numInputs - the number of inputs/dimensions for the Rosenbrock function
+	 *  @param numDataPoints - the number of data points the user wants to generate
+	 */
 	public ArrayList<Sample> generate(int numInputs, int numDataPoints){
 		Random random = new Random();
 		ArrayList<Sample> samples = new ArrayList<Sample>();
@@ -19,67 +28,38 @@ public class RosenbrockGenerator {
 		} catch (Exception e) {
 			System.out.println("Something went wrong generating the output file.");
 		}
-
-		/*//for all the input values, set total = 0 and run through all the inputs
-		double inputIncrement = .01;
-		double firstNumber = -(numDataPoints*inputIncrement)/4;
-		for (int i = 0; i < numDataPoints/2; i++) {
-			double inputs[] = new double[numInputs];
-			for(int j = 0; j < numInputs; j++){
-				inputs[j] = j*inputIncrement + firstNumber;
-				writer.printf("%.2f,", inputs[j]);
-			}
-
-			double output = calculate(inputs);
-			samples.add(new Sample(inputs, output));			//create new sample based on that array
-
-			//after each set of calculations (each output generated) print the results
-			writer.println(output);
-
-			for(int j = 0; j < numInputs; j++){
-				inputs[j] = (numInputs-j-1)*inputIncrement + firstNumber;
-				writer.printf("%.2f,", inputs[j]);
-			}
-
-			output = calculate(inputs);
-			samples.add(new Sample(inputs, output));			//create new sample based on that array
-
-			//after each set of calculations (each output generated) print the results
-			writer.println(output);
-
-			firstNumber+=inputIncrement;
-		}
-		writer.close();
-*/
+		
 		double maxOutput = Double.MIN_VALUE;
 		double minOutput = Double.MAX_VALUE;
-		for(int i = 0; i < numDataPoints; i++){
-			double inputs[] = new double[numInputs];
-			for(int j = 0; j < numInputs; j++){
-				inputs[j] = (random.nextDouble()*6)-3;
-				writer.print(inputs[j] + ",");
+		for(int i = 0; i < numDataPoints; i++){								//for all the data points desired,
+			double inputs[] = new double[numInputs];						//create a new input array
+			for(int j = 0; j < numInputs; j++){								//for that input array, loop through and
+				inputs[j] = (random.nextDouble()*6)-3;						//generate a random double as the input(s)
+				writer.print(inputs[j] + ",");								//print that to the file,
 			}
-			double output = calculate(inputs);
-			if(output > maxOutput)
+			double output = calculate(inputs);								//then calculate the output using the input array
+			if(output > maxOutput)											//track the min and the max outputs for range of the data
 				maxOutput = output;
 			if(output < minOutput)
 				minOutput = output;
 			writer.println(output);
-			samples.add(new Sample(inputs, output));
+			samples.add(new Sample(inputs, output));						//create a data sample from the information
 		}
 
 		System.out.println("Range of Data: " + (maxOutput-minOutput));
 		writer.close();
 
-		return samples;
+		return samples;														//return the list of samples
 	}
 
-	private double calculate(double[] inputs){
+	//calculates the output based on the inputs read in
+	//@param inputs - the array of inputs based on dimension (if 3 dimensions, 3 inputs, etc.)
+	private double calculate(double[] inputs){									
 		double output = 0;
 		for(int i = 0; i < inputs.length-1; i++){
 			output += (Math.pow((1 - inputs[i]), 2) + (100 * Math.pow(inputs[i+1] - Math.pow(inputs[i], 2), 2)));	//Rosenbrock function
 		}
 		return output;
-		//return Math.sin(inputs[0]);
+		//return Math.sin(inputs[0]);										//if we want to test using the sine function, this is here as well
 	}
 }
